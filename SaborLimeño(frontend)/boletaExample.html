@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Boleta Electrónica</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="Style_paginas/boletaExample.css">
+</head>
+<body class="bg-light d-flex flex-column justify-content-center align-items-center py-4">
+
+  <!-- BOLETA -->
+  <div id="boleta" class="boleta card shadow-lg p-4 mb-4">
+    <h2 class="text-center mb-3">🍽 Sabor Limeño</h2>
+    <p class="text-center mb-0"><strong>RUT:</strong> 12.345.678-9</p>
+    <p class="text-center"><strong>Dirección:</strong> Av. Siempre Viva 742, Springfield</p>
+    <hr>
+
+    <div class="d-flex justify-content-between">
+      <p><strong>Boleta N°:</strong> <span id="numero-boleta">PED000</span></p>
+      <p><strong>Fecha:</strong> <span id="fecha-boleta"></span></p>
+    </div>
+
+    <div class="mb-3">
+      <p id="cliente-nombre"><strong>Cliente:</strong> —</p>
+      <p id="cliente-email"><strong>Email:</strong> —</p>
+    </div>
+
+    <table class="table table-sm">
+      <thead class="table-light">
+        <tr>
+          <th>Cant.</th>
+          <th>Producto</th>
+          <th class="text-end">Precio</th>
+          <th class="text-end">Subtotal</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+      <tfoot>
+        <tr>
+          <th colspan="3" class="text-end">Total:</th>
+          <th class="text-end" id="total-final">$0</th>
+        </tr>
+      </tfoot>
+    </table>
+
+    <p class="text-muted text-center small mt-3">
+      Gracias por tu compra 💚 <br>
+      Esta boleta electrónica es un comprobante válido. <br>
+      Una copia ha sido enviada a tu correo electrónico.
+    </p>
+  </div>
+
+  <!-- BOTONES (CENTRADOS Y SEPARADOS DEL PDF) -->
+  <div class="text-center mb-3">
+    <button id="btnInicio" class="btn btn-primary me-2">Ir al inicio</button>
+    <button id="btnDescargar" class="btn btn-success">Descargar PDF</button>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+
+      // MOSTRAR FECHA DE LA BOLETA
+      document.getElementById("fecha-boleta").textContent =
+        new Date().toLocaleString("es-CL");
+
+      const tbody = document.querySelector("tbody");
+      const correoUsuario = sessionStorage.getItem("correoUsuario");
+
+      if (!correoUsuario) {
+        alert("No hay usuario logeado. No se puede generar la boleta.");
+      } else {
+        cargarPedidoDesdeBackend();
+      }
+
+      // OBTENER ÚLTIMO PEDIDO DEL USUARIO DESDE BACKEND
+      async function cargarPedidoDesdeBackend() {
+        try {
+          const resUser = await fetch(`http://127.0.0.1:8000/usuario/${encodeURIComponent(correoUsuario)}`);
+          const usuario = await resUser.json();
+          const idUsuario = usuario._id;
+
+          if (!idUsuario) {
+            console.error("No se encontró idUsuario");
+            return;
+          }
+
+          const resPedidos = await fetch(`http://127.0.0.1:8000/pedido/${idUsuario}`);
+          const pedidos = await resPedidos.json();
+
+          if (!Array.isArray(pedidos) || pedidos.length === 0) {
+            tbody.innerHTML = "<tr><td colspan='4' class='text-center'>No hay pedidos disponibles</td></tr>";
+            return;
+          }
+
+          const pedido = pedidos[pedidos.length - 1];
+
+          document.getElementById("numero-boleta").textContent = pedido._id;
+          document.getElementById("cliente-nombre").textContent =
+            `Cliente: ${pedido.nombreCliente || usuario.nombre || "Cliente"}`;
+          document.getElementById("cliente-email").textContent =
+            `Email: ${correoUsuario}`;
+
+          document.getElementById("fecha-boleta").textContent =
+            pedido.fecha || new Date().toLocaleString("es-CL");
+
+          const items = pedido.items || [];
+          tbody.innerHTML = "";
+          let totalFinal = 0;
+
+          if (items.length === 0) {
+            tbody.innerHTML = "<tr><td colspan='4' class='text-center'>No hay productos disponibles</td></tr>";
+          } else {
+            items.forEach(p => {
+              const cantidad = p.cantidad || 1;
+              const precioUnitario = Number(p.precioUnitario || p.precio || 0);
+              const subtotal = precioUnitario * cantidad;
+              totalFinal += subtotal;
+
+              const fila = document.createElement("tr");
+              fila.innerHTML = `
+                <td>${cantidad}</td>
+                <td>${p.nombre}</td>
+                <td class="text-end">$${precioUnitario.toLocaleString("es-CL")}</td>
+                <td class="text-end">$${subtotal.toLocaleString("es-CL")}</td>
+              `;
+              tbody.appendChild(fila);
+            });
+          }
+
+          document.getElementById("total-final").textContent =
+            `$${totalFinal.toLocaleString("es-CL")}`;
+
+        } catch (error) {
+          console.error("Error cargando pedido para boleta:", error);
+          tbody.innerHTML =
+            "<tr><td colspan='4' class='text-center text-danger'>Error al cargar la boleta</td></tr>";
+        }
+      }
+
+      // EVENTO DESCARGAR PDF
+      document.getElementById("btnDescargar").addEventListener("click", () => {
+        const elemento = document.getElementById("boleta");
+
+        const opciones = {
+          margin: 10,
+          filename: `boleta_${new Date().getTime()}.pdf`,
+          image: { type: "jpeg", quality: 1 },
+          html2canvas: { scale: 2 },
+          jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+        };
+
+        html2pdf().set(opciones).from(elemento).save();
+      });
+
+      // BOTÓN IR AL INICIO
+      document.getElementById("btnInicio").addEventListener("click", () => {
+        window.location.href = "inicio.html"; 
+      });
+
+    });
+  </script>
+
+</body>
+</html>

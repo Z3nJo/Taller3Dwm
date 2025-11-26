@@ -1,0 +1,99 @@
+/* Reset básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f8f9fa;
+  color: #333;
+  line-height: 1.5;
+  padding: 1rem;
+}
+
+/* Encabezado */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+header h1 {
+  color: #0d6efd;
+  font-size: 1.5rem;
+}
+
+.btn-imprimir {
+  background: #0d6efd;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.3rem;
+  cursor: pointer;
+}
+
+.btn-imprimir:hover {
+  background: #0b5ed7;
+}
+
+.hora-impresion {
+  margin-bottom: 1rem;
+  font-style: italic;
+  color: #555;
+}
+
+/* Pedidos */
+.pedido {
+  background: white;
+  border: 1px solid #ddd;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.pedido h2 {
+  margin-bottom: 0.5rem;
+  color: #0d6efd;
+}
+
+.estado {
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 1rem;
+}
+
+/* Error */
+.error {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 1rem;
+  border: 1px solid #f5c6cb;
+  border-radius: 0.5rem;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* Estilos especiales para impresión */
+@media print {
+  body {
+    background: white;
+    color: black;
+  }
+
+  header, .btn-imprimir {
+    display: none; /* Ocultar cabecera y botón en impresión */
+  }
+
+  .pedido {
+    border: 1px dashed #333;
+    margin-bottom: 1rem;
+    page-break-inside: avoid; /* Evitar que un pedido quede partido en 2 páginas */
+  }
+
+  .estado label {
+    font-size: 1rem;
+  }
+}

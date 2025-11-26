@@ -1,0 +1,19 @@
+body {
+  background-color: #F99151;
+}
+
+.card {
+  border-radius: 1rem;
+}
+
+h2, h4, h5 {
+  color: #333;
+}
+
+.list-group-item {
+  font-size: 1rem;
+}
+
+.bg-light {
+  border: 1px solid #e0e0e0;
+}

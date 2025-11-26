@@ -1,0 +1,101 @@
+/* Ajustes de logo */
+.logo {
+  border-radius: 50%;
+}
+
+/* Opciones navbar */
+.navbar .nav-link {
+  font-size: 1.1rem;
+  margin: 0 0.5rem;
+  color: var(--neutral-dark);
+}
+
+.navbar .nav-link:hover {
+  color: var(--primary-2); /* color secundario de la paleta */
+  text-decoration: underline;
+}
+
+/* Botón perfil adaptado a paleta */
+.btn-outline-primary {
+  font-weight: 500;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+  border-color: var(--primary-2);
+  color: var(--primary-2);
+  background-color: transparent;
+  box-shadow: none;
+}
+
+/* Hover del botón perfil */
+.btn-outline-primary:hover {
+  background-color: var(--primary-2);
+  color: var(--neutral-light);
+  border-color: var(--primary-2);
+  box-shadow: none;
+}
+
+/* Focus / Active / Click del botón perfil */
+.btn-outline-primary:focus,
+.btn-outline-primary:active,
+.btn-outline-primary.focus,
+.btn-outline-primary:focus-visible {
+  background-color: var(--primary-3) !important; /* naranja oscuro */
+  color: var(--neutral-light) !important;
+  border-color: var(--primary-3) !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Botón hamburguesa fijo */
+#btn-hamburger {
+  position: fixed;
+  top: 90px;
+  left: 20px;
+  z-index: 1200;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#btn-hamburger:hover {
+  background: rgba(255, 174, 123, 0.85); /* ligero sobre tono de paleta */
+}
+
+/* Menú lateral categorías */
+.side-menu {
+  position: fixed;
+  top: 0;
+  left: -260px;
+  width: 260px;
+  height: 100%;
+  background: var(--neutral-dark);
+  color: #fff;
+  padding: 16px;
+  z-index: 1250;
+  transition: left 0.3s ease;
+  overflow-y: auto;
+}
+
+.side-menu.show {
+  left: 0;
+}
+
+.side-menu .cat {
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 6px;
+}
+
+.side-menu .cat:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Ajuste responsive */
+@media(max-width: 576px) {
+  #btn-hamburger { top: 80px; left: 10px; padding: 6px 10px; }
+  .side-menu { width: 100%; }
+}

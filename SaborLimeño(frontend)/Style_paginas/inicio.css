@@ -1,0 +1,115 @@
+/* Reset simple */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Header de bienvenida */
+header {
+  background: linear-gradient(135deg, var(--secondary2-1), var(--secondary2-3));
+  padding: 2rem;
+}
+
+header h1 {
+  color: var(--primary-2);
+}
+
+header p {
+  font-size: 1.2rem;
+  color: var(--neutral-dark);
+}
+
+/* Carrusel */
+#platos-carousel img {
+  object-fit: cover;
+  height: 500px;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.carousel-caption {
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  color: #fff;
+}
+
+/* Botón */
+.btn-primary {
+  padding: 0.8rem 2rem;
+  font-size: 1.2rem;
+  border-radius: 0.5rem;
+  background-color: var(--primary-2);
+  border-color: var(--primary-2);
+  color: #fff;
+  transition: background 0.3s, border 0.3s;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-3);
+  border-color: var(--primary-3);
+}
+
+/* Footer */
+.site-footer {
+  background: #C0520E;
+  color: #fff;
+  padding: 24px 16px;
+  margin-top: 40px;
+  font-size: 14px;
+}
+
+.footer-container {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer-contact h4,
+.footer-social h4 {
+  margin-bottom: 10px;
+  font-size: 16px;
+  color: #fff; /* Blanco puro, como pediste */
+}
+
+.footer-contact a,
+.footer-social a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.footer-contact a:hover,
+.footer-social a:hover {
+  text-decoration: underline;
+}
+
+.social-icons {
+  display: flex;
+  gap: 12px;
+  font-size: 20px;
+}
+
+.footer-bottom {
+  text-align: center;
+  padding-top: 16px;
+  margin-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  font-size: 13px;
+  color: #bbb;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .footer-container {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .social-icons {
+    justify-content: center;
+  }
+}

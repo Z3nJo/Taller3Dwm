@@ -1,0 +1,23 @@
+:root {
+  --primary-1: #F99151;  
+  --primary-2: #E97227; 
+  --primary-3: #C0520E;  
+  --primary-4: #983A00;  
+
+  --secondary1-1: #FF7F7B;  
+  --secondary1-2: #F95551;  
+  --secondary1-3: #E92C27;  
+  --secondary1-4: #C0120E;  
+  --secondary1-5: #980400;  
+
+  --secondary2-1: #FFC77B; 
+  --secondary2-2: #F9B151;  
+  --secondary2-3: #E99627;
+  --secondary2-4: #C0730E;  
+  --secondary2-5: #985700;  
+
+  --neutral-light: #FFF5E6; 
+  --neutral-medium: #E9ECEF; 
+  --neutral-dark: #212121;   
+  --neutral-text: #6c757d;  
+}

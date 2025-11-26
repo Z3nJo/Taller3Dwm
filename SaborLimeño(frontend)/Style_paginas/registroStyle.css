@@ -1,0 +1,74 @@
+body{
+    font-family: "Montserrat", sans-serif;
+    background-color: #F99151;
+}
+
+.registro-container{
+    position: relative;
+    top: 160px;
+    display: grid;
+    justify-self: center;
+    width: 400px;
+    padding-right: 60px;
+    padding-left: 60px;
+    background-color: #fff;
+    border-radius: 20px;
+
+    .registro-title{
+        text-align: center;
+        margin-bottom: 30px;
+        margin-top: 10px;
+    }
+
+    .registro-btn{
+        display: flex;
+        justify-self: center;
+        justify-content: center;
+        padding-top: 5px;
+        width: 80px;
+        height: 35px;
+        margin-top: 30px;
+        margin-bottom: 15px;
+        color: #ffffff;
+        background-color: #C0520E;
+        border: solid 1px #985700;
+        border-radius: 5px;
+    }
+}
+
+.registroByAdmin-container{
+    position: relative;
+    top: 160px;
+    display: grid;
+    justify-self: center;
+    width: 400px;
+    padding-right: 60px;
+    padding-left: 60px;
+    background-color: rgb(191, 42, 0);
+    border-radius: 20px;
+
+    .registro-title{
+        text-align: center;
+        margin-bottom: 30px;
+        margin-top: 10px;
+    }
+
+    .registro-btn{
+        display: flex;
+        justify-self: center;
+        justify-content: center;
+        padding-top: 5px;
+        width: 80px;
+        height: 35px;
+        margin-top: 30px;
+        margin-bottom: 15px;
+        color: #dddddd;
+        background-color: rgb(95, 58, 21);
+        border: solid 1px #000;
+        border-radius: 5px;
+    }
+}
+
+.enlaces{
+    color: #985700;
+}

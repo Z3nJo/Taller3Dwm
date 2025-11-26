@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pedido Confirmado</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="Style_paginas/confirmacion.css">
+</head>
+<body>
+  <div class="container my-5">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+        <div class="card text-center shadow-sm p-4">
+          <div class="mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="#28a745" class="bi bi-check-circle" viewBox="0 0 16 16">
+              <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM7 10.5l4-4L10.5 5l-3.5 3.5L5.5 7 4 8.5l3 3z"/>
+            </svg>
+          </div>
+
+          <h2 class="mb-3">¡Pedido Confirmado!</h2>
+          <p id="nombre-cliente" class="fs-5"></p>
+          <p id="mensaje-pedido" class="fs-6"></p>
+          <p id="metodo-pago" class="text-muted"></p>
+
+          <h4 class="mt-4">Resumen del Pedido</h4>
+          <ul id="lista-productos" class="list-group text-start mt-3 mb-4"></ul>
+          <h5>Total: <strong id="total-compra"></strong></h5>
+
+          <p class="text-success mt-3 fw-semibold">Gracias por tu compra 😊</p>
+          <div class="d-flex justify-content-center gap-3 mt-4 flex-wrap">
+            <a href="catalogo.html" class="btn btn-primary btn-lg">Volver al Catálogo</a>
+            <a href="boletaExample.html" class="btn btn-secondary btn-lg">Ver Boleta</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  document.addEventListener("DOMContentLoaded", async () => {
+      // 1) Obtener correo y ID de usuario
+      const correoUsuario = sessionStorage.getItem("correoUsuario");
+      if (!correoUsuario) return console.error("No existe correoUsuario");
+
+      let idUsuario = null;
+      try {
+          const respUser = await fetch(`http://127.0.0.1:8000/usuario/${encodeURIComponent(correoUsuario)}`);
+          const usuario = await respUser.json();
+          idUsuario = usuario._id || usuario.id;
+          document.getElementById("nombre-cliente").textContent = `Cliente: ${usuario.nombre}`;
+      } catch (e) {
+          console.error("Error obteniendo usuario:", e);
+          return;
+      }
+
+      // 2) Tomar carrito y total desde sessionStorage
+      const carrito = JSON.parse(sessionStorage.getItem("productosCompra")) || [];
+      const total = Number(sessionStorage.getItem("montoPagar")) || 0;
+      const lista = document.getElementById("lista-productos");
+      lista.innerHTML = "";
+
+      let itemsPedido = [];
+
+      carrito.forEach(item => {
+          itemsPedido.push({
+              idProducto: item.idProducto,
+              cantidad: item.cantidad,
+              precioUnitario: item.precioUnitario
+          });
+
+          const li = document.createElement("li");
+          li.className = "list-group-item d-flex justify-content-between";
+          li.innerHTML = `<span>${item.nombre} x${item.cantidad}</span><span>$${(item.precioUnitario * item.cantidad).toLocaleString("es-CL")}</span>`;
+          lista.appendChild(li);
+      });
+
+      document.getElementById("total-compra").textContent = "$" + total.toLocaleString("es-CL");
+
+      // 3) Tomar método y idPago desde sessionStorage
+      const metodoPago = sessionStorage.getItem("metodoPago") || "efectivo";
+      const idPago = sessionStorage.getItem("idPago") || null;
+
+      if (!idPago && metodoPago !== "efectivo") {
+          console.warn("⚠ No se encontró idPago, el pedido podría fallar en backend");
+      }
+
+      document.getElementById("metodo-pago").textContent = `Método: ${metodoPago}`;
+
+      // 4) Crear pedido
+      try {
+          const respPedido = await fetch(`http://127.0.0.1:8000/pedido/confirmar/${idUsuario}?total=${total}`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                  metodo: metodoPago,
+                  idPago: idPago,
+                  items: itemsPedido
+              })
+          });
+
+          if (!respPedido.ok) {
+              const errorText = await respPedido.text();
+              throw new Error(`Error ${respPedido.status}: ${errorText}`);
+          }
+
+          const data = await respPedido.json();
+          document.getElementById("mensaje-pedido").textContent =
+              `Tu pedido ha sido registrado con éxito. Número de pedido: ${data.pedido} (Método: ${metodoPago})`;
+
+      } catch (e) {
+          console.error("Error creando pedido:", e);
+      }
+
+      // 5) Limpiar sessionStorage para no mantener valores antiguos
+      sessionStorage.removeItem("metodoPago");
+      sessionStorage.removeItem("idPago");
+      sessionStorage.removeItem("productosCompra");
+      sessionStorage.removeItem("montoPagar");
+  });
+  </script>
+</body>
+</html>

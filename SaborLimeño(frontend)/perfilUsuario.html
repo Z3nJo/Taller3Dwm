@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <!-- ✅ Sistema responsivo -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil de Usuario</title>
+  <!-- ✅ Bootstrap CSS -->
+  <link rel="stylesheet" href="paleta.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="Style_paginas/navbar.css">
+  <link rel="stylesheet" href="Style_paginas/perfilUsuario.css">
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+    <div class="container-fluid">
+      <a class="navbar-brand fw-bold d-flex align-items-center" href="inicio.html">
+        <img src="Media/Sabor.png" alt="Logo" width="40" height="40" class="me-2">
+        Sabor Limeño
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain"
+        aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarMain">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-3 gap-3">
+          <li class="nav-item"><a class="nav-link" href="inicio.html">Inicio</a></li>
+          <li class="nav-item"><a class="nav-link" href="catalogo.html">Catálogo</a></li>
+        </ul>
+        <div class="d-flex">
+          <a href="perfilUsuario.html" class="btn btn-outline-primary">Perfil</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Encabezado -->
+  <header class="text-center py-5 bg-light shadow-sm">
+    <h1 class="display-5 fw-bold">Mi Perfil</h1>
+    <p class="text-muted">Gestiona tus datos personales y tu cuenta</p>
+  </header>
+
+  <!-- Contenido principal -->
+  <main class="container my-5">
+    <div class="row g-4">
+      <!-- Columna izquierda: Datos del usuario -->
+      <div class="col-lg-8">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h2 class="h4 mb-4">Datos del Usuario</h2>
+            <form id="form-perfil" class="row g-3">
+              <div class="col-md-6">
+                <label for="nombre" class="form-label">Nombre completo</label>
+                <input type="text" class="form-control" id="nombre" name="nombre" required>
+              </div>
+              <div class="col-md-6">
+                <label for="correo" class="form-label">Correo electrónico</label>
+                <input type="email" class="form-control" id="correo" name="correo" required>
+              </div>
+              <div class="col-md-6">
+                <label for="telefono" class="form-label">Número telefónico</label>
+                <input type="tel" class="form-control" id="telefono" name="telefono" required>
+              </div>
+              <div class="col-md-6">
+                <label for="direccion" class="form-label">Dirección</label>
+                <input type="text" class="form-control" id="direccion" name="direccion" required>
+              </div>
+
+              <!-- Nueva contraseña -->
+              <div class="col-md-6">
+                <label for="newPassword" class="form-label">Nueva contraseña</label>
+                <input type="password" class="form-control" id="newPassword" name="newPassword"
+                  autocomplete="new-password" minlength="8"
+                  placeholder="Dejar vacío si no desea cambiarla">
+                <div class="form-text">Mínimo 8 caracteres. Dejar vacío si no desea cambiar la contraseña.</div>
+              </div>
+
+              <!-- Confirmar nueva contraseña -->
+              <div class="col-md-6">
+                <label for="confirmPassword" class="form-label">Confirmar nueva contraseña</label>
+                <input type="password" class="form-control" id="confirmPassword" name="confirmPassword"
+                  autocomplete="new-password" placeholder="Reingrese la nueva contraseña">
+              </div>
+
+              <div class="col-12 text-center">
+                <button type="submit" class="btn btn-primary px-4">Actualizar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Columna derecha: Acciones -->
+      <div class="col-lg-4">
+        <div class="card shadow-sm">
+          <div class="card-body text-center">
+            <h2 class="h5 mb-4">Acciones</h2>
+            <button id="btn-cerrar-sesion" class="btn btn-danger w-100">Cerrar Sesión</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal Confirmación con Contraseña -->
+  <div class="modal fade" id="modalConfirmacion" tabindex="-1" aria-labelledby="modalConfirmacionLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalConfirmacionLabel">Confirmar cambios</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <p>Para actualizar tus datos, por favor ingresa tu contraseña actual:</p>
+          <input type="password" id="passwordConfirm" class="form-control" placeholder="Contraseña actual" required>
+          <div id="errorPassword" class="text-danger mt-2 d-none">Contraseña incorrecta.</div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" id="btnConfirmarCambios">Confirmar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer mt-5 bg-light shadow-sm">
+    <div class="container py-4 d-flex flex-column flex-md-row justify-content-between">
+      <div>
+        <h5>Contacto</h5>
+        <p>Email: <a href="mailto:contacto@saborlimeno.cl">contacto@saborlimeno.cl</a></p>
+        <p>Tel: <a href="tel:+56912345678">+56 9 1234 5678</a></p>
+      </div>
+      <div>
+        <h5>Síguenos</h5>
+        <a href="#" class="me-2">🌐</a>
+        <a href="#" class="me-2">📷</a>
+        <a href="#">🐦</a>
+      </div>
+    </div>
+    <div class="text-center py-3 border-top">
+      <p class="mb-0">&copy; 2025 Sabor Limeño. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Script de perfil -->
+  <script>
+  (async function() {
+    // ⚠️ Cambiar dinámicamente según el usuario logueado
+    const correoUsuario = sessionStorage.getItem("correoUsuario"); 
+    if (!correoUsuario) {
+      alert("No se ha encontrado información del usuario. Por favor inicia sesión.");
+      window.location.href = "login.html";
+      return;
+    }
+
+    const form = document.getElementById('form-perfil');
+    const newPass = document.getElementById('newPassword');
+    const confirmPass = document.getElementById('confirmPassword');
+    const btnConfirmarCambios = document.getElementById('btnConfirmarCambios');
+    const errorPassword = document.getElementById('errorPassword');
+
+    let usuarioActivo = {};
+
+    // Función para cargar datos desde la API
+    async function cargarDatosUsuario() {
+      try {
+        const res = await fetch(`http://127.0.0.1:8000/usuario/${correoUsuario}`);
+        const data = await res.json();
+
+        if (data.status === "error") {
+          alert("Usuario no encontrado. Por favor inicia sesión.");
+          window.location.href = "login.html";
+          return;
+        }
+
+        usuarioActivo = data;
+
+        // Rellenar formulario
+        document.getElementById("nombre").value = usuarioActivo.nombre || "";
+        document.getElementById("correo").value = usuarioActivo.correo || "";
+        document.getElementById("telefono").value = usuarioActivo.telefono || "";
+        document.getElementById("direccion").value = usuarioActivo.direccion || "";
+
+      } catch (err) {
+        console.error("Error al cargar datos del usuario:", err);
+        alert("No se pudo cargar la información del usuario.");
+      }
+    }
+
+    await cargarDatosUsuario();
+
+    // Al enviar formulario -> abrir modal de contraseña
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      // Validación de nueva contraseña
+      const newVal = newPass.value.trim();
+      const confVal = confirmPass.value.trim();
+      if (newVal || confVal) {
+        if (newVal.length < 8) {
+          alert("La nueva contraseña debe tener al menos 8 caracteres.");
+          return;
+        }
+        if (newVal !== confVal) {
+          alert("Las contraseñas no coinciden.");
+          return;
+        }
+      }
+
+      // Mostrar modal de confirmación
+      new bootstrap.Modal(document.getElementById("modalConfirmacion")).show();
+    });
+
+    // Confirmar cambios
+    btnConfirmarCambios.addEventListener("click", async () => {
+      const passIngresada = document.getElementById("passwordConfirm").value.trim();
+      if (!passIngresada) {
+        errorPassword.textContent = "Debes ingresar tu contraseña actual.";
+        errorPassword.classList.remove("d-none");
+        return;
+      }
+
+      // Preparar datos a enviar
+      const nuevosDatos = {
+        correo: usuarioActivo.correo,
+        passw_actual: passIngresada,
+        nombre: document.getElementById("nombre").value.trim(),
+        telefono: document.getElementById("telefono").value.trim(),
+        direccion: document.getElementById("direccion").value.trim()
+      };
+
+      if (newPass.value.trim()) {
+        nuevosDatos.nueva_passw = newPass.value.trim();
+        nuevosDatos.confirm_passw = confirmPass.value.trim();
+      }
+
+      try {
+        const res = await fetch(`http://127.0.0.1:8000/usuario/actualizar`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(nuevosDatos)
+        });
+
+        const data = await res.json();
+
+        if (data.status === "ok") {
+          alert("Datos actualizados correctamente ✅");
+
+          // Recargar datos desde la API
+          await cargarDatosUsuario();
+
+          // Limpiar campos de contraseña
+          newPass.value = "";
+          confirmPass.value = "";
+          document.getElementById("passwordConfirm").value = "";
+          errorPassword.classList.add("d-none");
+
+          // Cerrar modal
+          bootstrap.Modal.getInstance(document.getElementById("modalConfirmacion")).hide();
+        } else {
+          errorPassword.textContent = data.msg || "Error al actualizar.";
+          errorPassword.classList.remove("d-none");
+        }
+
+      } catch (err) {
+        console.error("Error al actualizar usuario:", err);
+        errorPassword.textContent = "Error al actualizar usuario.";
+        errorPassword.classList.remove("d-none");
+      }
+    });
+
+    // Botón cerrar sesión
+    document.getElementById("btn-cerrar-sesion").addEventListener("click", () => {
+      sessionStorage.removeItem("correoUsuario");
+      window.location.href = "login.html";
+    });
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+/* Sobrescribir bg-light de Bootstrap */
+body.bg-light {
+  background-color: #F99151 !important;
+}
+
+/* Card */
+.card {
+  max-width: 450px;
+  border-radius: 1rem;
+  background-color: #fff;
+  padding: 20px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+/* Título */
+h2 {
+  color: #198754;
+  margin-bottom: 15px;
+}
+
+/* SVG animado */
+svg {
+  animation: bounce 1s ease infinite alternate;
+  display: block;
+  margin: 0 auto 10px;
+}
+
+@keyframes bounce {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-5px); }
+}

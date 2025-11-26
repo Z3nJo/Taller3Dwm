@@ -1,0 +1,95 @@
+/* Fondo de la página */
+body {
+  background-color: #F99151; /* Naranja de la paleta */
+  font-family: Arial, sans-serif;
+  min-height: 100vh;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Tarjeta principal */
+.card {
+  border-radius: 1rem;
+  background-color: #fff; /* Mantener la card blanca */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Títulos */
+h2 {
+  color: #C0520E; /* Naranja oscuro de la paleta */
+  text-align: center;
+}
+
+h5 {
+  color: #333;
+}
+
+/* Información de usuario dentro de la card */
+p, label {
+  color: #333;
+}
+
+/* Botones */
+.btn {
+  font-weight: 500;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+/* Botones naranjas de la paleta */
+.btn-secondary {
+  background-color: #F99151; /* Naranja claro */
+  border-color: #F99151;
+  color: #fff;
+}
+
+.btn-secondary:hover {
+  background-color: #C0520E; /* Naranja oscuro */
+  border-color: #C0520E;
+  transform: scale(1.05);
+}
+
+.btn-success {
+  background-color: #C0520E; /* Naranja oscuro */
+  border-color: #C0520E;
+  color: #fff;
+}
+
+.btn-success:hover {
+  background-color: #F99151; /* Naranja claro */
+  border-color: #F99151;
+  transform: scale(1.05);
+}
+
+/* Form-check radios */
+.form-check-input {
+  cursor: pointer;
+}
+
+/* Alertas */
+.alert {
+  font-size: 0.9rem;
+}
+
+/* Vuelto */
+#vueltoMsg {
+  font-weight: 500;
+}
+
+/* Modal content */
+.modal-content {
+  border-radius: 1rem;
+}
+
+/* Responsivo */
+@media (max-width: 576px) {
+  .card {
+    padding: 1rem;
+  }
+
+  .btn-lg {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+}

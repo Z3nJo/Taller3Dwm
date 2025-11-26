@@ -1,0 +1,35 @@
+/* Títulos */
+h2 {
+  font-weight: 600;
+}
+
+/* Filtros */
+form .form-label {
+  font-weight: 500;
+}
+
+/* Tarjetas */
+.card {
+  border-radius: 0.5rem;
+}
+
+/* Hover tabla */
+.table-hover tbody tr:hover {
+  background-color: rgba(0, 123, 255, 0.1);
+}
+
+/* Responsivo */
+@media (max-width: 576px) {
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  .btn-lg {
+    font-size: 0.9rem;
+    padding: 0.6rem 1rem;
+  }
+
+  table {
+    font-size: 0.85rem;
+  }
+}

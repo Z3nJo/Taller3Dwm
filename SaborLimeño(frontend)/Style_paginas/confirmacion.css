@@ -1,0 +1,23 @@
+body {
+  background-color: #F99151;
+}
+
+.card {
+  border-radius: 1rem;
+  padding: 2rem;
+  background-color: #ffffff;
+}
+
+.card-title {
+  font-weight: 600;
+  color: #28a745;
+}
+
+svg {
+  display: block;
+  margin: 0 auto;
+}
+
+.btn-lg {
+  padding: 0.75rem 1.5rem;
+}

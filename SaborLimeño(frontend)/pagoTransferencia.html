@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pago por Transferencia</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="Style_paginas/pagoTransferencia.css">
+</head>
+<body>
+  <div class="container my-5">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm p-4">
+          <h2 class="card-title text-center mb-4">Pago por Transferencia o Billetera Digital</h2>
+
+          <div class="mb-3">
+            <label class="form-label">Seleccione el método de pago</label>
+            <select class="form-select" id="metodo-pago">
+              <option value="transferencia">Transferencia Bancaria</option>
+              <option value="paypal">PayPal</option>
+            </select>
+          </div>
+
+          <div class="mb-4" id="instrucciones">
+            <p><strong>Transferencia Bancaria:</strong> Realice la transferencia a la cuenta <em>123-456789-0</em>,
+               banco MiBanco, tipo de cuenta "Cuenta corriente" a nombre de Tienda Sabor Limeño.</p>
+            <p>Una vez confirmada, su pago será procesado.</p>
+          </div>
+
+          <!-- Total a pagar -->
+          <div class="mb-4 text-center">
+            <h5>Total a pagar: <strong id="monto-a-pagar"></strong></h5>
+          </div>
+
+          <!-- Botones -->
+          <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <a href="resumen.html" class="btn btn-secondary btn-lg">Volver al Resumen</a>
+            <button id="btn-pagar" class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#modalBancos">
+              Pagar en mi banco
+            </button>
+          </div>
+
+          <div id="mensaje-pago" class="mt-3 text-center text-danger d-none">Fondos insuficientes</div>
+          <div id="mensaje-exito" class="mt-3 text-center text-success d-none">Pago recibido correctamente</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Bancos -->
+  <div class="modal fade" id="modalBancos" tabindex="-1" aria-labelledby="modalBancosLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalBancosLabel">Seleccione su Banco</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="list-group">
+            <button type="button" class="list-group-item list-group-item-action banco" data-banco="MiBanco">Banco Estado</button>
+            <button type="button" class="list-group-item list-group-item-action banco" data-banco="Banco Ejemplo">Banco de chile</button>
+            <button type="button" class="list-group-item list-group-item-action banco" data-banco="Banco Demo">Banco Falabella</button>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Mostrar monto
+    const monto = sessionStorage.getItem("montoPagar");
+    if (monto) {
+      document.getElementById("monto-a-pagar").textContent = monto;
+    }
+
+    // Escuchar cambio de método
+    document.getElementById("metodo-pago").addEventListener("change", (e) => {
+      const instrucciones = document.getElementById("instrucciones");
+      if (e.target.value === "paypal") {
+        instrucciones.innerHTML = "<p><strong>PayPal:</strong> Será redirigido a la pasarela de PayPal para completar su compra.</p>";
+      } else {
+        instrucciones.innerHTML = `<p><strong>Transferencia Bancaria:</strong> Realice la transferencia a la cuenta <em>123-456789-0</em>.
+          Una vez confirmada, su pago será procesado.</p>`;
+      }
+    });
+
+    // Función para actualizar pago por transferencia a completado
+    async function actualizarPagoTransferencia() {
+      const correoUsuario = sessionStorage.getItem("correoUsuario");
+      if (!correoUsuario) {
+        console.error("No se encontró correoUsuario en sessionStorage");
+        return;
+      }
+
+      try {
+        // 1. Obtener idUsuario
+        const encodedCorreo = encodeURIComponent(correoUsuario);
+        const userResp = await fetch(`http://127.0.0.1:8000/usuario/${encodedCorreo}`);
+        if (!userResp.ok) {
+          console.error("Error al obtener idUsuario:", await userResp.text());
+          return;
+        }
+        const userData = await userResp.json();
+        const idUsuario = userData._id;
+        console.log("🟢 idUsuario obtenido:", idUsuario);
+
+        // 2. Obtener pagos de este usuario
+        const pagosResp = await fetch(`http://127.0.0.1:8000/pago/${idUsuario}`);
+        if (!pagosResp.ok) {
+          console.error("Error al obtener pagos:", await pagosResp.text());
+          return;
+        }
+        const pagos = await pagosResp.json();
+
+        // 3. Buscar pago pendiente por transferencia
+        const pagoPendiente = pagos.find(p => p.metodo === "transferencia" && p.estado === "pendiente");
+        if (!pagoPendiente) {
+          console.warn("No se encontró pago pendiente por transferencia");
+          return;
+        }
+
+        // 4. Actualizar estado a completado
+        const updateResp = await fetch(`http://127.0.0.1:8000/pago/${pagoPendiente._id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ estado: "completado" })
+        });
+
+        if (updateResp.ok) {
+          console.log("✅ Pago por transferencia actualizado a completado");
+        } else {
+          console.error("❌ Error al actualizar pago:", await updateResp.text());
+        }
+
+      } catch (err) {
+        console.error("🚨 Error en actualizarPagoTransferencia:", err);
+      }
+    }
+
+    // Selección de banco en el modal
+    document.querySelectorAll(".banco").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        const bancoSeleccionado = btn.dataset.banco;
+        console.log("Banco seleccionado:", bancoSeleccionado);
+
+        // Guardar selección en sessionStorage si quieres
+        sessionStorage.setItem("bancoSeleccionado", bancoSeleccionado);
+
+        // Actualizar pago a completado en backend
+        await actualizarPagoTransferencia();
+
+        // Cerrar modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById("modalBancos"));
+        modal.hide();
+
+        // Redirigir a notificación de pago
+        window.location.href = "notificacionPago.html";
+      });
+    });
+  </script>
+</body>
+</html>

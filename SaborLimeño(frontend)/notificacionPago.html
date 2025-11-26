@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <!-- RESPONSIVE: viewport para adaptar la página a móviles y tablets -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notificación de Pago</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="Style_paginas/notificacionPago.css">
+</head>
+<body class="bg-light d-flex justify-content-center align-items-center vh-100">
+  <!-- RESPONSIVE: d-flex + justify-content-center + align-items-center → centra la card horizontal y verticalmente en cualquier pantalla -->
+  <!-- RESPONSIVE: vh-100 → ocupa el 100% del alto de la ventana -->
+
+  <div class="card shadow-lg p-4 text-center">
+    <!-- RESPONSIVE: card con padding y sombra, adaptable al ancho del contenedor -->
+    <div class="mb-3">
+      <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="green" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M6.97 11.03 3.47 7.53l1.06-1.06L6.97 8.91l4.47-4.47 1.06 1.06-5.53 5.53z"/>
+      </svg>
+    </div>
+    <h2 class="mb-3">¡Tu pago ha sido confirmado!</h2>
+    <p class="text-muted mb-4">
+      Hemos recibido tu pago correctamente.<br>
+      También te enviamos un correo de confirmación con los detalles de tu pedido.
+    </p>
+    <!-- RESPONSIVE: btn-lg → botón grande, se adapta a pantallas pequeñas -->
+    <a href="confirmacion.html" class="btn btn-success btn-lg">Confirmar</a>
+  </div>
+
+  <!-- RESPONSIVE: Bootstrap JS permite adaptabilidad de grid, flex y botones -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

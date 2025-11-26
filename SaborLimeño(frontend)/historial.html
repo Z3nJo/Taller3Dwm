@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Historial de Pedidos</title>
+  <link rel="stylesheet" href="Style_paginas/paleta.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="Style_paginas/navbar.css">
+  <link rel="stylesheet" href="Style_paginas/historial.css">
+  <style>
+
+  </style>
+</head>
+
+<body>
+
+    <!-- Navbar responsiva de Bootstrap -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+    <div class="container-fluid">
+        <!-- Logo + nombre -->
+        <a class="navbar-brand fw-bold d-flex align-items-center" href="inicio.html">
+        <img src="Media/Sabor.png" alt="Logo" width="75" height="75" class="me-2">
+        Sabor Limeño
+        </a>
+
+        <!-- Botón hamburguesa para pantallas pequeñas -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" 
+        aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+        </button>
+
+       <!-- Menú colapsable (responsive) -->
+      <div class="collapse navbar-collapse" id="navbarMain">
+        <!-- Opciones al lado del logo -->
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-3 gap-3">
+            <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="inicio.html">Inicio</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link" href="catalogo.html">Catálogo</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#sobreNosotrosModal">
+                Sobre Nosotros
+            </a>
+            </li>
+        </ul>
+
+        <!-- Botones a la derecha -->
+        <div id="navbar-botones-derecha" class="d-flex gap-2">
+            <a href="perfilUsuario.html" class="btn btn-outline-primary">Perfil</a>
+            <!-- Aquí se agregará dinámicamente el botón de administrador si aplica -->
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container my-5">
+    <h2 class="text-center mb-4">Historial de Pedidos</h2>
+
+    <div id="notificaciones" class="position-fixed top-0 start-50 translate-middle-x mt-3 zindex-tooltip"
+      style="width: 90%; max-width: 500px; display: none;"></div>
+
+    <div id="historial-pedidos">
+      <!-- Aquí se cargan los pedidos dinámicamente -->
+    </div>
+  </div>
+
+  <!-- Sticky buttons -->
+  <div class="sticky-buttons">
+    <a href="catalogo.html" class="btn btn-secondary btn-lg">Volver al Catálogo</a>
+    <button id="repetir-pedido" class="btn btn-success btn-lg" disabled>Repetir Pedido</button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // ---------------- Funciones utilitarias ----------------
+    function parsePriceToNumber(v) {
+      if (typeof v === "number") return v;
+      if (!v) return 0;
+      const n = String(v).replace(/[^0-9\-]/g, "");
+      return n === "" ? 0 : parseInt(n, 10);
+    }
+
+    function normalizeProduct(p) {
+      return {
+        nombre: p.nombre || p.nombreProducto || "Sin nombre",
+        precioUnitario: parsePriceToNumber(p.precio ?? p.precioUnitario ?? 0),
+        cantidad: Number(p.cantidad || 1),
+        subtotal: parsePriceToNumber(p.subtotal ?? p.precio ?? 0) * (p.cantidad || 1)
+      };
+    }
+    // -------------------------------------------------------
+
+    const historialContainer = document.getElementById("historial-pedidos");
+    const btnRepetir = document.getElementById("repetir-pedido");
+    let pedidoSeleccionado = null;
+
+    const correoUsuario = sessionStorage.getItem("correoUsuario");
+
+    if (!correoUsuario) {
+      historialContainer.innerHTML =
+        "<p class='text-center'>Debes iniciar sesión para ver tu historial.</p>";
+    } else {
+      cargarHistorial();
+    }
+
+    // -------------------------------------------------------
+    async function cargarHistorial() {
+      try {
+        const resUser = await fetch(`http://127.0.0.1:8000/usuario/${encodeURIComponent(correoUsuario)}`);
+        if (!resUser.ok) throw new Error("No se pudo obtener el usuario");
+
+        const usuario = await resUser.json();
+        const idUsuario = usuario._id;
+
+        const resHist = await fetch(`http://127.0.0.1:8000/pedido/${idUsuario}`);
+        const pedidosUsuario = await resHist.json();
+
+        renderizarPedidos(pedidosUsuario);
+
+      } catch (error) {
+        console.error(error);
+        historialContainer.innerHTML =
+          "<p class='text-center text-danger'>Error al cargar el historial.</p>";
+      }
+    }
+
+    // Renderizar historial
+    function renderizarPedidos(pedidosUsuario) {
+      historialContainer.innerHTML = "";
+
+      if (!pedidosUsuario || pedidosUsuario.length === 0) {
+        historialContainer.innerHTML =
+          "<p class='text-center'>No tienes pedidos aún.</p>";
+        return;
+      }
+
+      pedidosUsuario.forEach((pedido) => {
+        const card = document.createElement("div");
+        card.className = "card mb-3 shadow-sm pedido";
+        card.dataset.pedidoId = pedido._id;
+
+        // ESTADO INCLUYENDO "COMPLETADO"
+        const estadoTexto =
+          pedido.estado === "cancelado"
+            ? "Cancelado"
+            : pedido.estado === "completado"
+            ? "Completado"
+            : pedido.entregado
+            ? "Entregado"
+            : "Pendiente";
+
+        // CLASES PARA BADGE
+        const badgeClass =
+          estadoTexto === "Cancelado" ? "bg-danger" :
+          estadoTexto === "Completado" ? "bg-primary" :
+          estadoTexto === "Entregado" ? "bg-success" :
+          "bg-warning text-dark";
+
+        let productosHTML = "";
+        (pedido.items || []).forEach((p) => {
+          const norm = normalizeProduct(p);
+          const cantidadTexto = norm.cantidad > 1 ? `(x${norm.cantidad})` : "";
+          productosHTML += `
+            <li class="list-group-item d-flex justify-content-between">
+              ${norm.nombre} ${cantidadTexto}
+              <span>$${norm.subtotal.toLocaleString("es-CL")}</span>
+            </li>`;
+        });
+
+        card.innerHTML = `
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <span><strong>Pedido #${pedido._id}</strong></span>
+            <span class="badge ${badgeClass}">${estadoTexto}</span>
+          </div>
+          <div class="card-body">
+            <p><strong>Fecha:</strong> ${pedido.fecha}</p>
+            <ul class="list-group mb-2">
+              ${productosHTML}
+            </ul>
+            <p class="text-end"><strong>Total:</strong> $${parsePriceToNumber(pedido.total).toLocaleString("es-CL")}</p>
+
+            <div class="text-end mt-2">
+              <button class="btn btn-danger btn-cancelar"
+                style="${pedido.estado === "pendiente" ? "display:inline-block" : "display:none"};">
+                Cancelar Pedido
+              </button>
+            </div>
+          </div>
+        `;
+
+        historialContainer.appendChild(card);
+
+        // Selección
+        card.addEventListener("click", () => {
+          if (pedidoSeleccionado) pedidoSeleccionado.classList.remove("pedido-seleccionado");
+          card.classList.add("pedido-seleccionado");
+          pedidoSeleccionado = card;
+          btnRepetir.disabled = false;
+        });
+
+        // Cancelar pedido
+        const btnCancelar = card.querySelector(".btn-cancelar");
+        btnCancelar.addEventListener("click", (e) => {
+          e.stopPropagation();
+          cancelarPedido(pedido._id);
+        });
+      });
+    }
+
+    // Cancelar pedido  → ahora solo actualiza estado
+    async function cancelarPedido(id) {
+      if (!confirm("¿Deseas cancelar este pedido?")) return;
+
+      try {
+        const res = await fetch(`http://127.0.0.1:8000/pedido/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ estado: "cancelado" })
+        });
+
+        if (!res.ok) throw new Error("Error al cancelar");
+
+        cargarHistorial();
+      } catch (err) {
+        alert("No se pudo cancelar el pedido.");
+      }
+    }
+
+    // REPETIR PEDIDO
+    btnRepetir.addEventListener("click", async () => {
+      if (!pedidoSeleccionado) return;
+
+      const idPedido = pedidoSeleccionado.dataset.pedidoId;
+      if (!idPedido) return alert("Pedido inválido");
+
+      try {
+        const correo = sessionStorage.getItem("correoUsuario");
+        if (!correo) return alert("No hay sesión activa.");
+
+        const resUser = await fetch(`http://127.0.0.1:8000/usuario/${encodeURIComponent(correo)}`);
+        const usuario = await resUser.json();
+        const idUsuario = usuario._id;
+
+        const resPedido = await fetch(`http://127.0.0.1:8000/pedido/detalle/${idPedido}`);
+        const pedidoCompleto = await resPedido.json();
+
+        const items = pedidoCompleto.items || [];
+        if (items.length === 0) return alert("El pedido no tiene productos.");
+
+        await fetch(`http://127.0.0.1:8000/carrito/${idUsuario}/clear`, { method: "POST" });
+
+        let carritoLocal = [];
+
+        for (const item of items) {
+          await fetch(
+            `http://127.0.0.1:8000/carrito/${idUsuario}/add?idProducto=${encodeURIComponent(item.idProducto)}&cantidad=${encodeURIComponent(item.cantidad)}`,
+            { method: "POST" }
+          );
+
+          carritoLocal.push({
+            idProducto: item.idProducto,
+            nombre: item.nombre,
+            precio: item.precio,
+            cantidad: item.cantidad
+          });
+        }
+
+        localStorage.setItem("carrito", JSON.stringify(carritoLocal));
+
+        window.location.href = "resumen.html";
+
+      } catch (error) {
+        console.error(error);
+        alert("Ocurrió un error al repetir el pedido.");
+      }
+    });
+
+  </script>
+</body>
+</html>

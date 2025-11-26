@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pedidos Pendientes - Despacho</title>
+
+  <!-- Bootstrap (responsivo) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Tu CSS personalizado -->
+  <link rel="stylesheet" href="paleta.css">
+  <link rel="stylesheet" href="Style_paginas/pedidosPendientes.css">
+
+  <!-- 🔥 CSS necesario para impresión -->
+  <style>
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #print-container, #print-container * {
+        visibility: visible;
+      }
+      #print-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 20px;
+        background: white;
+      }
+    }
+  </style>
+
+</head>
+<body>
+  <header class="bg-light border-bottom">
+    <div class="container d-flex align-items-center justify-content-between py-3">
+      <h1 class="h4 mb-0">📦 Pedidos Pendientes</h1>
+    </div>
+  </header>
+
+  <main class="container my-4">
+    <div id="resumen" class="mb-3">
+      <span id="contador-pedidos" class="badge bg-info fs-6">Cargando...</span>
+    </div>
+
+    <div id="lista-contenedor" class="row gy-3">
+      <!-- tarjetas de pedidos se inyectan aquí -->
+    </div>
+
+    <div id="sin-pedidos" class="text-center mt-5 d-none">
+      <div class="alert alert-secondary">
+        <h5 class="mb-1">🚫 ¡Sin pedidos pendientes!</h5>
+        <p class="mb-0">Actualmente no hay pedidos en estado "Pendiente".</p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="text-center py-4">
+    <small class="text-muted">Panel de despacho • Sabor Limeño</small>
+  </footer>
+
+  <!--  Contenedor oculto para impresión -->
+  <div id="print-container" style="display:none;"></div>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+  (async function () {
+
+    // VALIDAR ROL DEL USUARIO
+    const correo = sessionStorage.getItem("correoUsuario");
+
+    if (!correo) {
+      alert("Debes iniciar sesión para acceder.");
+      window.location.href = "login.html";
+      return;
+    }
+
+    try {
+      // Obtener usuario por correo
+      const resUser = await fetch(`http://127.0.0.1:8000/usuario/${correo}`);
+      if (!resUser.ok) throw new Error("No se pudo obtener el usuario");
+
+      const usuario = await resUser.json();
+
+      // Validar rol
+      if (!usuario || usuario.rol !== "despachador") {
+        alert("Acceso denegado. Este panel es solo para DESPACHADORES.");
+        window.location.href = "login.html";
+        return;
+      }
+
+    } catch (err) {
+      console.error("Error verificando rol:", err);
+      alert("Error validando acceso. Vuelve a iniciar sesión.");
+      window.location.href = "login.html";
+      return;
+    }
+
+    const listaContenedor = document.getElementById("lista-contenedor");
+    const sinPedidosEl = document.getElementById("sin-pedidos");
+    const contadorEl = document.getElementById("contador-pedidos");
+
+    // Obtener todos los usuarios
+
+    let usuarios = [];
+    try {
+      const resUsuarios = await fetch("http://127.0.0.1:8000/usuario/");
+      usuarios = await resUsuarios.json();
+    } catch (e) {
+      console.error("❌ Error cargando usuarios:", e);
+      return;
+    }
+
+
+    //  Acumular pedidos pendientes
+    const pendientes = [];
+
+    for (const u of usuarios) {
+      try {
+        const respPedidos = await fetch(`http://127.0.0.1:8000/pedido/${u._id}`);
+        if (!respPedidos.ok) continue;
+
+        const pedidosUsuario = await respPedidos.json();
+
+        pedidosUsuario.forEach(p => {
+          if ((p.estado || "").toLowerCase() === "pendiente") {
+
+            pendientes.push({
+              ...p,
+              clienteNombre: u.nombre || "Sin nombre",
+              clienteDireccion: u.direccion || "Sin dirección",
+              clienteTelefono: u.telefono || "",
+              productos: p.items || []
+            });
+          }
+        });
+
+      } catch (e) {
+        console.warn("Error cargando pedidos para", u._id, e);
+      }
+    }
+
+
+    //  Ordenar por fecha
+    pendientes.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+
+    contadorEl.textContent = `${pendientes.length} pedido(s) pendientes`;
+
+    if (pendientes.length === 0) {
+      sinPedidosEl.classList.remove("d-none");
+      listaContenedor.innerHTML = "";
+      return;
+    } else {
+      sinPedidosEl.classList.add("d-none");
+    }
+
+    function formatoPesos(n) {
+      return "$" + (Number(n) || 0).toLocaleString("es-CL");
+    }
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    // Renderizar pedidos
+    listaContenedor.innerHTML = "";
+
+    pendientes.forEach(p => {
+
+      const col = document.createElement("div");
+      col.className = "col-12";
+
+      const card = document.createElement("div");
+      card.className = "card shadow-sm";
+
+      const body = document.createElement("div");
+      body.className = "card-body";
+
+      // ==== CABECERA ====
+      const header = document.createElement("div");
+      header.className = "d-flex justify-content-between align-items-start";
+
+      const hora = p.fecha?.split(" ")[1] || "";
+
+      const info = document.createElement("div");
+      info.innerHTML = `
+        <h5 class="mb-1">${escapeHtml(p.clienteNombre)}</h5>
+        <p class="mb-1"><strong>Dirección:</strong> ${escapeHtml(p.clienteDireccion)}</p>
+        <p class="text-muted">${escapeHtml(hora)}</p>
+      `;
+
+      const acciones = document.createElement("div");
+      acciones.className = "d-flex gap-2";
+
+      const btnImp = document.createElement("button");
+      btnImp.className = "btn btn-outline-primary btn-sm";
+      btnImp.textContent = "Imprimir";
+      btnImp.onclick = () => imprimirPedido(p);
+
+      const btnDetalles = document.createElement("button");
+      btnDetalles.className = "btn btn-outline-secondary btn-sm";
+      btnDetalles.textContent = "Detalles";
+
+      const btnCompletado = document.createElement("button");
+      btnCompletado.className = "btn btn-success btn-sm";
+      btnCompletado.textContent = "Completado";
+      btnCompletado.onclick = async () => marcarComoCompletado(p._id, col);
+
+      acciones.append(btnImp, btnDetalles, btnCompletado);
+      header.append(info, acciones);
+
+      // ==== DETALLES (PRODUCTOS) ====
+      const detalles = document.createElement("div");
+      detalles.className = "mt-3 d-none";
+
+      btnDetalles.onclick = () => detalles.classList.toggle("d-none");
+
+      if (p.productos.length > 0) {
+        const ul = document.createElement("ul");
+        ul.className = "list-group";
+
+        let total = 0;
+
+        p.productos.forEach(prod => {
+          const cant = Number(prod.cantidad || 1);
+          const precio = Number(prod.precio || 0);
+          const sub = cant * precio;
+          total += sub;
+
+          const li = document.createElement("li");
+          li.className = "list-group-item d-flex justify-content-between";
+          li.innerHTML = `
+            <span>${escapeHtml(prod.nombre)} <small class="text-muted">(x${cant})</small></span>
+            <span>${formatoPesos(sub)}</span>
+          `;
+          ul.appendChild(li);
+        });
+
+        detalles.appendChild(ul);
+
+        const totalDiv = document.createElement("div");
+        totalDiv.className = "mt-2 text-end";
+        totalDiv.innerHTML = `<strong>Total: ${formatoPesos(total)}</strong>`;
+        detalles.appendChild(totalDiv);
+      }
+
+      body.append(header, detalles);
+      card.append(body);
+      col.append(card);
+
+      listaContenedor.append(col);
+    });
+
+  })();
+
+
+  // FUNCIÓN PARA IMPRIMIR UN SOLO PEDIDO
+  function imprimirPedido(p) {
+    const cont = document.getElementById("print-container");
+
+    cont.style.display = "block";
+    cont.innerHTML = `
+      <h2>${p.clienteNombre}</h2>
+      <p><strong>Dirección:</strong> ${p.clienteDireccion}</p>
+      <p><strong>Teléfono:</strong> ${p.clienteTelefono}</p>
+      <p><strong>Hora pedido:</strong> ${p.fecha}</p>
+
+      <h4 class="mt-3">Productos:</h4>
+      <ul>
+        ${p.productos.map(prod => `
+          <li>${prod.nombre} x${prod.cantidad} — ${formatoPesos(prod.precio * prod.cantidad)}</li>
+        `).join("")}
+      </ul>
+
+      <h4 class="mt-3">Total: ${formatoPesos(
+        p.productos.reduce((t, pr) => t + pr.precio * pr.cantidad, 0)
+      )}</h4>
+    `;
+
+    window.print();
+
+    setTimeout(() => cont.style.display = "none", 300);
+  }
+
+  function formatoPesos(n) {
+    return "$" + (Number(n) || 0).toLocaleString("es-CL");
+  }
+
+
+  // MARCAR COMO COMPLETADO
+  async function marcarComoCompletado(idPedido, cardElement) {
+    if (!confirm("¿Marcar este pedido como COMPLETADO?")) return;
+
+    try {
+      const resp = await fetch(`http://127.0.0.1:8000/pedido/${idPedido}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ estado: "completado" })
+      });
+
+      if (!resp.ok) {
+        alert("❌ Error al actualizar el pedido");
+        return;
+      }
+
+      // 🟢 Quitar tarjeta del DOM
+      cardElement.remove();
+
+      // 🟢 Actualizar contador
+      const contadorEl = document.getElementById("contador-pedidos");
+      const actual = Number(contadorEl.textContent.split(" ")[0]);
+      contadorEl.textContent = `${actual - 1} pedido(s) pendientes`;
+
+      // 🟢 Si queda vacío, mostrar aviso
+      if (document.querySelectorAll(".card").length === 0) {
+        document.getElementById("sin-pedidos").classList.remove("d-none");
+      }
+
+    } catch (err) {
+      console.error(err);
+      alert("❌ Error al conectar con el servidor");
+    }
+  }
+  </script>
+</body>
+</html>

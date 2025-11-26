@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+  <title>Resumen del Pedido</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="Style_paginas/resumen.css">
+</head>
+<body>
+  <div class="container my-5">
+    <div class="row justify-content-center">
+      <div class="col-md-10 col-lg-8">
+        <div class="card shadow-sm p-4">
+          <h2 class="text-center mb-4">Resumen del Pedido</h2>
+
+          <p id="id-pedido" class="text-muted text-center"></p>
+
+          <div class="mb-4">
+            <h5>Productos:</h5>
+            <ul class="list-group" id="resumen-items">
+              <!-- Productos dinámicos -->
+            </ul>
+          </div>
+
+          <div class="mb-4 text-center">
+            <h4>Total: <strong id="resumen-total">$0</strong></h4>
+          </div>
+
+          <div class="mb-4">
+            <h5>Seleccione modalidad de entrega:</h5>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="entrega" id="retiro" value="retiro" checked>
+              <label class="form-check-label" for="retiro">Retiro en local</label>
+            </div>
+            <div class="bg-light p-3 mt-2 rounded" id="info-retiro">
+              <p><strong>Dirección:</strong> Av. Principal 123, Santiago</p>
+              <p><strong>Horarios:</strong> Lunes a Sábado, 12:00 - 22:00 hrs</p>
+
+              <div id="pago-retiro" class="mt-3">
+                <h6>Seleccione método de pago:</h6>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="pago-retiro" id="retiro-tarjeta" value="tarjeta" checked>
+                  <label class="form-check-label" for="retiro-tarjeta">Tarjeta</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="pago-retiro" id="retiro-transferencia" value="transferencia">
+                  <label class="form-check-label" for="retiro-transferencia">Transferencia</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-check mt-3">
+              <input class="form-check-input" type="radio" name="entrega" id="delivery" value="delivery">
+              <label class="form-check-label" for="delivery">Delivery</label>
+            </div>
+            <div class="bg-light p-3 mt-2 rounded d-none" id="info-delivery">
+              <p><strong>Dirección de entrega:</strong> <span id="direccion-cliente">Calle Ejemplo 456</span></p>
+              <p><strong>Tiempo estimado:</strong> 30 - 45 minutos</p>
+              <p><strong>Radio de entrega:</strong> Hasta 10 km</p>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <a href="catalogo.html" class="btn btn-secondary btn-lg">Volver al Catálogo</a>
+            <button id="btn-pagar" class="btn btn-success btn-lg">Pagar</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    
+  //  VARIABLES BASE
+  const itemsContainer = document.getElementById("resumen-items");
+  const totalEl = document.getElementById("resumen-total");
+  const idPedidoEl = document.getElementById("id-pedido");
+
+  let idUsuario = null;
+  const correoUsuario = sessionStorage.getItem("correoUsuario");
+
+  // Pedido desde historial
+  const activeOrder = JSON.parse(sessionStorage.getItem("activeOrder"));
+  // Carrito desde catálogo
+  const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+
+  let productosAMostrar = [];
+  let total = 0;
+
+
+  //  OBTENER ID DEL USUARIO
+  document.addEventListener("DOMContentLoaded", async () => {
+      if (correoUsuario) {
+          try {
+              const res = await fetch(`http://127.0.0.1:8000/usuario/${encodeURIComponent(correoUsuario)}`);
+              if (res.ok) {
+                  const data = await res.json();
+                  idUsuario = data._id || data.id || null;
+              }
+          } catch (err) {
+              console.error("⚠ Error obteniendo ID usuario:", err);
+          }
+      }
+  });
+
+  //  NORMALIZAR PRODUCTOS
+  function normalizarProducto(p) {
+      return {
+          nombre: p.nombre,
+          precioUnitario: parseInt(p.precioUnitario || p.precio || 0, 10),
+          cantidad: p.cantidad || 1,
+          idProducto: p.idProducto || p.id // para consistencia con confirmacion.html
+      };
+  }
+
+  //  CARGA DEL PEDIDO (CATÁLOGO O HISTORIAL)
+  if (activeOrder && Array.isArray(activeOrder.productos)) {
+      productosAMostrar = activeOrder.productos.map(normalizarProducto);
+      total = productosAMostrar.reduce((s, p) => s + p.precioUnitario * p.cantidad, 0);
+      idPedidoEl.textContent = `Repetición de pedido #${activeOrder.id}`;
+      sessionStorage.removeItem("activeOrder");
+  } else if (carrito.length > 0) {
+      productosAMostrar = carrito.map(normalizarProducto);
+      total = productosAMostrar.reduce((s, p) => s + p.precioUnitario * p.cantidad, 0);
+  }
+
+  //  RENDERIZADO
+  productosAMostrar.forEach(p => {
+      const li = document.createElement("li");
+      li.className = "list-group-item d-flex justify-content-between align-items-center";
+      const cant = p.cantidad > 1 ? `(x${p.cantidad})` : "";
+      li.innerHTML = `<div><strong>${p.nombre}</strong> ${cant}</div>
+                      <span>$${(p.precioUnitario * p.cantidad).toLocaleString("es-CL")}</span>`;
+      itemsContainer.appendChild(li);
+  });
+  totalEl.textContent = `$${total.toLocaleString("es-CL")}`;
+
+
+  //  CREAR PAGO NORMAL
+  async function crearPagoNormal(metodo) {
+      if (!idUsuario) {
+          alert("No se pudo obtener el ID del usuario.");
+          return null;
+      }
+
+      const pagoObj = { idUsuario, monto: total, metodo, estado: "pendiente" };
+
+      try {
+          const pagoRes = await fetch("http://127.0.0.1:8000/pago/", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(pagoObj)
+          });
+
+          const pagoData = await pagoRes.json();
+          sessionStorage.setItem("idPago", pagoData.id);
+          return pagoData.id;
+
+      } catch (err) {
+          console.error("❌ Error creando pago normal:", err);
+          return null;
+      }
+  }
+
+  //  INICIAR WEBPAY
+  async function iniciarPagoWebpay() {
+      const monto = Number(sessionStorage.getItem("montoPagar"));
+
+      if (!idUsuario) { alert("No se pudo obtener la sesión de usuario."); return; }
+      if (!monto || isNaN(monto)) { alert("Error: monto inválido."); return; }
+
+      try {
+          const response = await fetch("http://127.0.0.1:8000/pago/webpay", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ idUsuario, monto })
+          });
+
+          const data = await response.json();
+          if (data.url && data.token) {
+              const form = document.createElement("form");
+              form.method = "POST";
+              form.action = data.url;
+
+              const input = document.createElement("input");
+              input.type = "hidden";
+              input.name = "token_ws";
+              input.value = data.token;
+
+              form.appendChild(input);
+              document.body.appendChild(form);
+              form.submit();
+          } else {
+              console.error("Respuesta inesperada Webpay:", data);
+              alert("Error iniciando Webpay.");
+          }
+      } catch (error) {
+          console.error("Error iniciando Webpay:", error);
+          alert("No se pudo conectar al servidor.");
+      }
+  }
+
+
+  // BOTÓN PAGAR CORREGIDO
+  document.getElementById("btn-pagar").addEventListener("click", async () => {
+      const metodoEntrega = document.querySelector('input[name="entrega"]:checked')?.value;
+      if (!metodoEntrega) { alert("Debes seleccionar un tipo de entrega"); return; }
+
+      let metodo = "";
+
+      if (metodoEntrega === "retiro") {
+          metodo = document.querySelector('input[name="pago-retiro"]:checked')?.value;
+          if (!metodo) { alert("Debes seleccionar un método de pago para retiro"); return; }
+      } else {
+          // DELIVERY → si hay radio seleccionado usamos su valor, si no, asumimos efectivo
+          const seleccionado = document.querySelector('input[name="pago-delivery"]:checked');
+          metodo = seleccionado ? seleccionado.value : "efectivo";
+      }
+
+      console.log("✅ Método final:", metodo);
+
+      // Guardar en sessionStorage
+      sessionStorage.setItem("productosCompra", JSON.stringify(productosAMostrar));
+      sessionStorage.setItem("montoPagar", total);
+      sessionStorage.setItem("metodoPago", metodo);
+
+      if (metodo === "tarjeta") {
+          // Crear pago y redirigir a Webpay
+          const idPago = await crearPagoNormal(metodo);
+          if (!idPago) { alert("No se pudo crear el pago"); return; }
+          await iniciarPagoWebpay();
+          return;
+      }
+
+      // Para efectivo o transferencia
+      const idPago = await crearPagoNormal(metodo);
+      if (!idPago) { alert("No se pudo crear el pago"); return; }
+
+      if (metodo === "transferencia") {
+          window.location.href = "pagoTransferencia.html";
+      } else {
+          // Para efectivo, o delivery sin radio seleccionado → vamos a delivery.html
+          window.location.href = "delivery.html";
+      }
+  });
+  </script>
+</body>
+</html>

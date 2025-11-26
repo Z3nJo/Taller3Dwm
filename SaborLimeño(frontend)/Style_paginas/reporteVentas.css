@@ -1,0 +1,48 @@
+/* Tarjetas resumen */
+.resumen-card {
+  border-radius: 0.5rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.resumen-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* Títulos */
+h2 {
+  font-weight: 600;
+}
+
+/* Tabla responsiva */
+.table-responsive {
+  max-height: 400px; /* para mantener scroll si hay muchas ventas */
+  overflow-y: auto;
+}
+
+/* Notificación de retraso */
+#alerta-retraso {
+  font-size: 0.95rem;
+  margin-bottom: 20px;
+}
+
+/* Responsivo */
+@media (max-width: 576px) {
+  .resumen-card {
+    font-size: 0.9rem;
+  }
+
+  #alerta-retraso {
+    font-size: 0.85rem;
+    padding: 0.5rem 1rem;
+  }
+
+  .table-responsive table {
+    font-size: 0.85rem;
+  }
+
+  .btn-lg {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+  }
+}

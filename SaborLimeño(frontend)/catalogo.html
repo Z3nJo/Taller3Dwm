@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <!-- RESPONSIVO: asegura que el contenido se adapte al ancho de la pantalla -->
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <title>Catálogo</title>
+
+  <!-- RESPONSIVO: Bootstrap 5 incluye grid y componentes adaptativos -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Google Fonts: fuente escalable -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600;700&display=swap" rel="stylesheet">
+
+  <!-- CSS personalizados: aquí pueden ir media queries -->
+  <link rel="stylesheet" href="Style_paginas/catalogoStyle.css">
+  <link rel="stylesheet" href="Style_paginas/navbar.css">
+</head>
+
+<body>
+
+ <!-- RESPONSIVO: navbar colapsa en móviles -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+    <!-- RESPONSIVO: contenedor fluido -->
+    <div class="container-fluid">
+      <!-- Logo + nombre -->
+      <a class="navbar-brand fw-bold d-flex align-items-center" href="inicio.html">
+        <img src="Media/Sabor.png" alt="Logo" width="75" height="75" class="me-2">
+        Sabor Limeño
+      </a>
+
+      <!-- RESPONSIVO: botón hamburguesa solo en pantallas pequeñas -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" 
+        aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- RESPONSIVO: d-flex + gap permiten distribución fluida -->
+      <div class="d-flex gap-2 ms-auto me-3">
+        <button id="btn-buscar" class="btn btn-outline-secondary">🔍 Buscar</button>
+        <button id="btn-carrito" class="btn btn-outline-success">🛒 Carrito</button>
+        <button id="btn-editar" class="btn btn-outline-primary">Editar</button>
+      </div>
+
+      <!-- RESPONSIVO: collapse permite que el menú se oculte en móviles -->
+      <div class="collapse navbar-collapse" id="navbarMain">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 gap-3">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="inicio.html">Inicio</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="catalogo.html">Catálogo</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#sobreNosotrosModal">
+              Sobre Nosotros
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- RESPONSIVO: menú hamburguesa adicional para móviles -->
+  <div class="hamburger-container">
+    <button id="hamburger" class="hamburger" aria-label="menu">☰</button>
+  </div>
+
+  <!-- RESPONSIVO: menú lateral oculto por defecto en móvil -->
+  <nav id="menu" class="side-menu" aria-hidden="true"></nav>
+
+  <!-- RESPONSIVO: controles admin adaptados con Bootstrap btn-sm -->
+  <div class="admin-controls" id="admin-controls" aria-hidden="true">
+    <button id="btn-abrir-agregar" class="btn btn-primary btn-sm">Agregar producto</button>
+    <button id="btn-finalizar" class="btn btn-secondary btn-sm">Finalizar</button>
+  </div>
+
+  <!-- RESPONSIVO: container centra y adapta el contenido -->
+  <main class="container my-4">
+    <div id="catalogo" class="catalogo"></div>
+  </main>
+
+  <!-- Modal Detalle producto -->
+  <div id="modal-producto" class="modal-overlay" aria-hidden="true">
+    <div class="modal-box">
+      <button class="modal-close" id="cerrar-detalle" aria-label="Cerrar">✖</button>
+      <div class="modal-inner">
+        <div class="modal-img-wrap">
+          <img id="detalle-img" src="" alt="Imagen producto">
+        </div>
+        <div class="modal-info">
+          <h3 id="detalle-nombre"></h3>
+          <p id="detalle-desc" class="muted"></p>
+          <p id="detalle-precio" class="precio"></p>
+          <div id="cantidad-container" class="cantidad-row">
+            <button id="restar" class="btn-count">−</button>
+            <span id="cantidad">1</span>
+            <button id="sumar" class="btn-count">+</button>
+          </div>
+          <div class="modal-actions">
+            <input type="hidden" id="detalle-id" value="">
+            <button id="btn-agregar-modal" class="btn btn-success">Agregar</button>
+            <span id="estado-no-disponible" class="badge bg-danger d-none">No disponible</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- RESPONSIVO: modal Bootstrap con tamaños fluidos -->
+  <div class="modal fade" id="sobreNosotrosModal" tabindex="-1" aria-labelledby="sobreNosotrosLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title fw-bold" id="sobreNosotrosLabel">Sobre Nosotros</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+            <p>
+            En <strong>Sabor Limeño</strong> nos apasiona la buena comida y la tradicion peruana.  
+            Nuestro objetivo es acercar a cada cliente platos únicos, elaborados con la más alta fidelidad a la cultura del Perú.
+            </p>
+            <p>
+            Creemos en la innovación culinaria y en brindar una experiencia inolvidable a cada visita.  
+            ¡Gracias por confiar en nosotros!
+            </p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+        </div>
+    </div>
+  </div>
+
+  <!-- Modal Editar Carrito -->
+  <div id="modal-editar-carrito" class="modal-overlay" aria-hidden="true">
+    <div class="modal-box">
+      <button class="modal-close" id="cerrar-editar-carrito" aria-label="Cerrar">✖</button>
+      <div class="modal-inner">
+        <div class="modal-img-wrap">
+          <img id="editar-img" src="Media/plato.png" alt="Imagen producto">
+        </div>
+        <div class="modal-info">
+          <h3 id="editar-nombre"></h3>
+          <p id="editar-desc" class="muted"></p>
+          <p id="editar-precio" class="precio"></p>
+          <div id="editar-cantidad-container" class="cantidad-row">
+            <button id="editar-restar" class="btn-count">−</button>
+            <span id="editar-cantidad">1</span>
+            <button id="editar-sumar" class="btn-count">+</button>
+          </div>
+          <div class="modal-actions">
+            <button id="editar-guardar" class="btn btn-success">Guardar</button>
+            <button id="editar-eliminar" class="btn btn-danger">🗑 Eliminar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESPONSIVO: inputs y botones con w-100 y mb-2 se adaptan a pantallas pequeñas -->
+  <div id="modal-busqueda" class="modal-overlay" aria-hidden="true">
+    <div class="modal-box small">
+      <button class="modal-close" id="cerrar-modal" aria-label="Cerrar">✖</button>
+      <h4>Búsqueda de productos</h4>
+      <input id="input-busqueda" placeholder="Buscar..." class="w-100 mb-2">
+      <div id="resultados-busqueda"></div>
+    </div>
+  </div>
+
+  <!-- Modal Agregar/Editar Producto (Admin) -->
+  <div id="modal-agregar-producto" class="modal-overlay" aria-hidden="true">
+    <div class="modal-box small">
+      <button class="modal-close" id="cerrar-modal-agregar" aria-label="Cerrar">✖</button>
+      <h4 id="modal-agregar-title">Agregar producto</h4>
+      <form id="form-agregar-producto" class="form-agregar">
+        <!-- Campos de producto -->
+        <label>Nombre
+          <input id="nombre-producto" type="text" required>
+        </label>
+        <label>Categoría
+          <input id="categoria-producto" type="text" required placeholder="Ej: Entradas">
+        </label>
+        <label>Precio
+          <input id="precio-producto" type="number" required>
+        </label>
+        <label>Filename de imagen
+          <input id="filename-producto" type="text" placeholder="plato.png">
+        </label>
+        <label>Subir imagen
+          <input type="file" id="imagen-producto-file" accept="image/*">
+        </label>
+        <label>Descripción
+          <textarea id="descripcion-producto"></textarea>
+        </label>
+        <label>
+          <input id="disponible-producto" type="checkbox" checked> Disponible
+        </label>
+
+        <!-- Botones -->
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Guardar</button>
+          <button type="button" id="cancelar-agregar" class="btn btn-secondary">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- RESPONSIVO: aside modal-carrito se comporta como panel lateral -->
+  <aside id="modal-carrito" class="modal-carrito" aria-hidden="true">
+    <div class="modal-header">
+      <h4>Tu carrito</h4>
+      <button id="cerrar-carrito" class="cerrar">✖</button>
+    </div>
+    <div class="carrito-items"></div>
+    <div class="modal-footer d-flex flex-column gap-2">
+        <div class="total-box d-flex justify-content-between w-100">
+            <strong>Total:</strong>
+            <span id="totalCarrito">$0</span>
+        </div>
+
+        <a href="historial.html" class="btn btn-info btn-sm w-100">Historial de pedidos</a>
+        <a href="resumen.html" class="btn btn-primary btn-sm w-100">Finalizar compra</a>
+        <button id="vaciar-carrito" class="btn btn-danger btn-sm w-100">Vaciar carrito</button>
+    </div>
+  </aside>
+
+  <!-- RESPONSIVO: footer dividido en columnas -->
+  <footer class="site-footer">
+    <div class="footer-container">
+        <!-- Datos de contacto -->
+        <div class="footer-contact">
+        <h4>Contacto</h4>
+        <p>Email: <a href="mailto:contacto@saborgourmet.cl">contacto@saborlimeno.cl</a></p>
+        <p>Tel: <a href="tel:+56912345678">+56 9 1234 5678</a></p>
+        </div>
+
+        <!-- Redes sociales -->
+        <div class="footer-social">
+        <h4>Síguenos</h4>
+        <div class="social-icons">
+            <a href="https://facebook.com" target="_blank" rel="noopener" aria-label="Facebook">🌐</a>
+            <a href="https://instagram.com" target="_blank" rel="noopener" aria-label="Instagram">📷</a>
+            <a href="https://twitter.com" target="_blank" rel="noopener" aria-label="Twitter">🐦</a>
+        </div>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <p>&copy; 2025 Sabor Limeño. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <script>
+    window.usuarioActual = { nombre: "David", rol: "administrador" };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="Scripts_paginas/carrito.js"></script>
+  <script src="Scripts_paginas/catalogo.js"></script>
+  <script src="Scripts_paginas/catalogoAdmin.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const pedidoFinalizado = localStorage.getItem("pedidoFinalizado");
+      if (pedidoFinalizado === "true") {
+        // Limpiar carrito y productos de sesión
+        localStorage.removeItem("carrito");
+        sessionStorage.removeItem("productosCompra");
+        
+        // Quitar la bandera para no recargar infinitamente
+        localStorage.removeItem("pedidoFinalizado");
+        
+        // Recargar la página para reflejar carrito vacío
+        location.reload();
+      }
+    });
+  </script>
+</body>
+</html> 

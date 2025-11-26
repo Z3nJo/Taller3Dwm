@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <!-- Sistema responsivo: viewport -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Página de Inicio</title>
+  <!-- Sistema responsivo: Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="Style_paginas/paleta.css">
+  <link rel="stylesheet" href="Style_paginas/inicio.css">
+  <link rel="stylesheet" href="Style_paginas/navbar.css">
+</head>
+<body>
+  <!-- Navbar responsiva de Bootstrap -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+    <div class="container-fluid">
+        <!-- Logo + nombre -->
+        <a class="navbar-brand fw-bold d-flex align-items-center" href="inicio.html">
+        <img src="Media/Sabor.png" alt="Logo" width="75" height="75" class="me-2">
+        Sabor Limeño
+        </a>
+
+        <!-- Botón hamburguesa para pantallas pequeñas -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" 
+        aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+        </button>
+
+       <!-- Menú colapsable (responsive) -->
+      <div class="collapse navbar-collapse" id="navbarMain">
+        <!-- Opciones al lado del logo -->
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-3 gap-3">
+            <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="inicio.html">Inicio</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link" href="catalogo.html">Catálogo</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#sobreNosotrosModal">
+                Sobre Nosotros
+            </a>
+            </li>
+        </ul>
+
+        <!-- Botones a la derecha -->
+        <div id="navbar-botones-derecha" class="d-flex gap-2">
+            <a href="perfilUsuario.html" class="btn btn-outline-primary">Perfil</a>
+            <!-- Aquí se agregará dinámicamente el botón de administrador si aplica -->
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Encabezado centrado, responsive por clases Bootstrap -->
+  <header class="text-center py-5 bg-light shadow-sm">
+    <img src="Media/Sabor.png" alt="Logo" width="300" height="300" class="me-2">
+    <h1 class="display-4 fw-bold">¡Sabor Limeño!</h1>
+    <p class="lead text-muted">Platos con sabor a la tradicion del Perú</p>
+  </header>
+
+  <!-- Carrusel de Bootstrap responsivo -->
+  <section id="platos-carousel" class="container my-5">
+    <div id="carouselPlatos" class="carousel slide" data-bs-ride="carousel">
+      <div class="carousel-inner rounded shadow">
+        <div class="carousel-item active">
+          <img src="Media/lomo-saltado.jpeg" class="d-block w-100" alt="Lomo saltado">
+          <div class="carousel-caption d-none d-md-block">
+            <h5>Lomo saltado</h5>
+            <p>Preparada con los mejores ingredientes</p>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <img src="Media/ceviche.png" class="d-block w-100" alt="Ceviche">
+          <div class="carousel-caption d-none d-md-block">
+            <h5>Ceviche</h5>
+            <p>Frescura y sabor en cada bocado</p>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <img src="Media/CausaLimeña.jpg" class="d-block w-100" alt="Causa Limeña">
+          <div class="carousel-caption d-none d-md-block">
+            <h5>Causa Limeña</h5>
+            <p>Ligera, fresca y deliciosa</p>
+          </div>
+        </div>
+      </div>
+      <!-- Controles responsive -->
+      <button class="carousel-control-prev" type="button" data-bs-target="#carouselPlatos" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carouselPlatos" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+      </button>
+    </div>
+  </section>
+
+  <!-- Modal de Bootstrap responsivo -->
+  <div class="modal fade" id="sobreNosotrosModal" tabindex="-1" aria-labelledby="sobreNosotrosLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title fw-bold" id="sobreNosotrosLabel">Sobre Nosotros</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+            <p>
+            En <strong>Sabor Limeño</strong> nos apasiona la buena comida y la tradicion peruana.  
+            Nuestro objetivo es acercar a cada cliente platos únicos, elaborados con la más alta fidelidad a la cultura del Perú.
+            </p>
+            <p>
+            Creemos en la innovación culinaria y en brindar una experiencia inolvidable a cada visita.  
+            ¡Gracias por confiar en nosotros!
+            </p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+        </div>
+    </div>
+  </div>
+
+  <!-- Botón centrado responsivo -->
+  <section class="text-center my-5">
+    <a href="catalogo.html" class="btn btn-lg btn-primary shadow">🍴 Ver Catálogo</a>
+  </section>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-container">
+        <div class="footer-contact">
+        <h4>Contacto</h4>
+        <p>Email: <a href="mailto:contacto@saborgourmet.cl">contacto@saborlimeno.cl</a></p>
+        <p>Tel: <a href="tel:+56912345678">+56 9 1234 5678</a></p>
+        </div>
+        <div class="footer-social">
+        <h4>Síguenos</h4>
+        <div class="social-icons">
+            <a href="https://facebook.com" target="_blank" rel="noopener" aria-label="Facebook">🌐</a>
+            <a href="https://instagram.com" target="_blank" rel="noopener" aria-label="Instagram">📷</a>
+            <a href="https://twitter.com" target="_blank" rel="noopener" aria-label="Twitter">🐦</a>
+        </div>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <p>&copy; 2025 Sabor Limeño. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Script para agregar botón de administrador si corresponde -->
+  <script>
+    const navbar = document.getElementById("navbar-botones-derecha");
+        // --- Sesión e inactividad ---
+    const TIEMPO_INACTIVIDAD = 5 * 60 * 1000;
+    let timeoutID;
+
+    function resetIdleTimer() {
+        if (timeoutID) clearTimeout(timeoutID);
+        timeoutID = setTimeout(() => {
+            sessionStorage.removeItem("usuarioActivo");
+            alert("Por inactividad, se cerró tu sesión.");
+            window.location.href = "login.html";
+        }, TIEMPO_INACTIVIDAD);
+    }
+
+    ['mousemove','keydown','scroll','click'].forEach(evt => {
+        document.addEventListener(evt, resetIdleTimer);
+    });
+
+    async function verificarRol() {
+      try {
+        const correoUsuario = sessionStorage.getItem("correoUsuario");
+
+        if (!correoUsuario) return; // No logueado, no mostrar nada
+
+        // Obtener usuario desde el backend
+        const res = await fetch(`http://127.0.0.1:8000/usuario/${encodeURIComponent(correoUsuario)}`);
+        if (!res.ok) throw new Error("No se pudo obtener el usuario");
+
+        const usuario = await res.json();
+
+        // Verificar rol
+        if (usuario.rol === "admin") {
+          const btnAdmin = document.createElement("a");
+          btnAdmin.href = "reporteVentas.html";
+          btnAdmin.className = "btn btn-warning ms-2";
+          btnAdmin.textContent = "Registro de ventas";
+
+          navbar.appendChild(btnAdmin);
+        }
+      } catch (err) {
+        console.error("Error verificando rol:", err);
+      }
+    }
+
+    // Ejecutar al cargar la página
+    verificarRol();
+  </script>
+</body>
+</html>

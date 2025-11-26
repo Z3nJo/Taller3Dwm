@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Procesando Pago...</title>
+</head>
+<body style="display: flex; justify-content: center; align-items: center; height: 100vh; font-family: Arial;">
+    <div>
+        <h2>Redirigiendo a Webpay...</h2>
+        <p>No cierres esta ventana.</p>
+    </div>
+
+    <form id="webpay-form" action="https://webpay3gint.transbank.cl/webpayserver/initTransaction" method="POST" style="display:none;">
+        <input type="hidden" name="token_ws" id="token_ws">
+    </form>
+
+    <script>
+        // 1. Obtener token_ws desde la URL
+        const params = new URLSearchParams(window.location.search);
+        const token = params.get("token_ws");
+
+        if (!token) {
+            alert("Error: No se recibió el token de pago.");
+        } else {
+            // 2. Insertar token en el formulario
+            document.getElementById("token_ws").value = token;
+
+            // 3. Enviar automáticamente el formulario a Webpay
+            document.getElementById("webpay-form").submit();
+        }
+    </script>
+</body>
+</html>

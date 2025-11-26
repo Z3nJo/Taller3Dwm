@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <!-- Sistema responsivo: viewport -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Imprimir Pedidos</title>
+  <link rel="stylesheet" href="Style_paginas/imprimirPedidos.css">
+</head>
+<body>
+  <header>
+    <h1>📄 Pedidos en Orden de Llegada</h1>
+    <button onclick="window.print()" class="btn-imprimir">🖨️ Imprimir</button>
+  </header>
+
+  <main class="contenedor">
+    <p class="hora-impresion">Hora de impresión: <span id="hora"></span></p>
+
+    <section class="pedido">
+      <h2>Juan Pérez</h2>
+      <p><strong>Hora pedido:</strong> 14:30</p>
+      <p><strong>Productos:</strong> Pizza Familiar, Gaseosa</p>
+      <div class="estado">
+        <label><input type="checkbox"> En preparación</label>
+        <label><input type="checkbox"> Listo</label>
+      </div>
+    </section>
+
+    <section class="pedido">
+      <h2>María López</h2>
+      <p><strong>Hora pedido:</strong> 14:45</p>
+      <p><strong>Productos:</strong> Sushi Box, Té Helado</p>
+      <div class="estado">
+        <label><input type="checkbox"> En preparación</label>
+        <label><input type="checkbox"> Listo</label>
+      </div>
+    </section>
+
+    <section class="pedido">
+      <h2>Carlos Díaz</h2>
+      <p><strong>Hora pedido:</strong> 15:00</p>
+      <p><strong>Productos:</strong> Hamburguesa Doble, Papas Fritas</p>
+      <div class="estado">
+        <label><input type="checkbox"> En preparación</label>
+        <label><input type="checkbox"> Listo</label>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Insertar la hora de impresión actual
+    document.getElementById("hora").textContent = new Date().toLocaleString();
+
+    // --- Obtener historial de usuarios ---
+    const historialUsuarios = JSON.parse(localStorage.getItem("historialUsuarios")) || {};
+
+    // Contenedor principal donde se agregarán los pedidos
+    const contenedor = document.querySelector("main.contenedor");
+
+    // Limpiar secciones de ejemplo existentes si las hubiera
+    const seccionesEjemplo = contenedor.querySelectorAll("section.pedido");
+    seccionesEjemplo.forEach(sec => sec.remove());
+
+    // Recorrer historial de usuarios y pedidos
+    for (const nombre in historialUsuarios) {
+      const pedidos = historialUsuarios[nombre];
+      pedidos.forEach(pedido => {
+        const sec = document.createElement("section");
+        sec.className = "pedido";
+
+        // Crear HTML del pedido
+        sec.innerHTML = `
+          <h2>${pedido.cliente}</h2>
+          <p><strong>Correo:</strong> ${pedido.correo}</p>
+          <p><strong>Dirección:</strong> ${pedido.direccion}</p>
+          <p><strong>Hora pedido:</strong> ${pedido.fecha}</p>
+          <p><strong>Productos:</strong> ${pedido.productos.map(prod => prod.nombre + (prod.cantidad ? " x" + prod.cantidad : "")).join(", ")}</p>
+          <p><strong>Total:</strong> $${pedido.total.toLocaleString("es-CL")}</p>
+          <div class="estado">
+            <label><input type="checkbox" ${pedido.estado === "En preparación" ? "checked" : ""}> En preparación</label>
+            <label><input type="checkbox" ${pedido.estado === "Listo" ? "checked" : ""}> Listo</label>
+          </div>
+        `;
+        contenedor.appendChild(sec);
+      });
+    }
+  </script>
+</body>
+</html>
