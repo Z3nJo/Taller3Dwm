@@ -97,10 +97,10 @@ async def confirmar_pago(request: Request):
 
     # Pago exitoso
     if result["status"] == "AUTHORIZED" and result["response_code"] == 0:
-        return RedirectResponse("https://slapi.onrender.com/notificacionPago.html")
+        return RedirectResponse("https://saborlimeno.netlify.app/notificacionPago.html")
 
     # Pago rechazado
-    return RedirectResponse("https://slapi.onrender.com/notificacionFallo.html")
+    return RedirectResponse("https://saborlimeno.netlify.app/notificacionFallo.html")
 
 
 # CRUD NORMAL
