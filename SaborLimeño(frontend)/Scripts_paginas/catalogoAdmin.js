@@ -170,60 +170,6 @@ window.openEditarProducto = function (id) {
   alert("Producto no encontrado");
 };
 
-  // GUARDAR PRODUCTO (CREAR O EDITAR)
-  formAgregar.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const nombre = inpNombre.value.trim();
-    const categoria = inpCategoria.value.trim();
-    const precio = parseFloat(inpPrecio.value);
-    const descripcion = inpDescripcion.value.trim();
-    const stock = inpDisponible.checked ? 1 : 0;
-    const filename = inpFilename.value.trim();
-
-    if (!nombre || !categoria) return alert("Nombre y categoría son obligatorios");
-
-    const payload = {
-      nombre,
-      categoria,
-      precio,
-      descripcion,
-      stock,
-      img: "/media/plato.png"
-    };
-
-    const archivoImagen = inpFile.files?.[0] || null;
-
-    try {
-      // Subir imagen si seleccionó archivo
-      if (archivoImagen) {
-        const urlImagen = await subirImagen(archivoImagen, filename || null);
-        payload.img = urlImagen;
-      } else if (filename) {
-        // Solo cambió nombre de archivo
-        payload.img = "/media/" + filename;
-      }
-
-      // PUT o POST según sea edición o creación
-      if (isEditing && editTarget.id) {
-        await actualizarProductoBackend(editTarget.id, payload);
-        alert("Producto actualizado");
-      } else {
-        await crearProductoBackend(payload);
-        alert("Producto agregado");
-      }
-
-      // Recargar catálogo
-      if (window.cargarProductosBackend) await window.cargarProductosBackend();
-      window.mostrarCatalogo(isEditing);
-      closeModal(modalAgregar);
-
-    } catch (err) {
-      console.error(err);
-      alert("Error al guardar producto");
-    }
-  });
-
     // 8) ELIMINAR
     window.eliminarProducto = async function (id) {
       if (!confirm("¿Eliminar este producto?")) return;
