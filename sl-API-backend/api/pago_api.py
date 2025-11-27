@@ -44,7 +44,7 @@ async def crear_transaccion(data: dict):
             buy_order=buy_order,
             session_id=session_id,
             amount=amount,
-            return_url="http://127.0.0.1:8000/pago/webpay/confirmar"
+            return_url="https://slapi.onrender.com/pago/confirmar"
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -77,12 +77,12 @@ async def confirmar_pago(request: Request):
     token_ws = params.get("token_ws")
 
     if not token_ws:
-        return RedirectResponse("http://127.0.0.1:5500/pagoFallido.html")
+        return RedirectResponse("https://slapi.onrender.com/pagoFallido.html")
 
     try:
         result = tx.commit(token_ws)
     except Exception:
-        return RedirectResponse("http://127.0.0.1:5500/pagoFallido.html")
+        return RedirectResponse("https://slapi.onrender.com/pagoFallido.html")
 
     update_data = {
         "estado": result["status"],
@@ -97,10 +97,10 @@ async def confirmar_pago(request: Request):
 
     # Pago exitoso
     if result["status"] == "AUTHORIZED" and result["response_code"] == 0:
-        return RedirectResponse("http://127.0.0.1:5500/notificacionPago.html")
+        return RedirectResponse("https://slapi.onrender.com/notificacionPago.html")
 
     # Pago rechazado
-    return RedirectResponse("http://127.0.0.1:5500/notificacionFallo.html")
+    return RedirectResponse("https://slapi.onrender.com/notificacionFallo.html")
 
 
 # CRUD NORMAL

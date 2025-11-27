@@ -124,7 +124,7 @@
   // Cargar productos desde backend (GET /producto)
   async function cargarProductos() {
     try {
-      const res = await fetch(API_URL);
+      const res = await fetch("https://slapi.onrender.com/producto");
       if (!res.ok) throw new Error("Error al cargar productos");
       const data = await res.json();
 

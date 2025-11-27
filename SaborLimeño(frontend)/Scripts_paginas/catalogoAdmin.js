@@ -17,7 +17,6 @@
   const inpNombre = document.getElementById("nombre-producto");
   const inpCategoria = document.getElementById("categoria-producto");
   const inpPrecio = document.getElementById("precio-producto");
-  const inpImagen = document.getElementById("imagen-producto");
   const inpFile = document.getElementById("imagen-producto-file"); 
   const inpFilename = document.getElementById("filename-producto"); 
   const inpDescripcion = document.getElementById("descripcion-producto");
@@ -82,7 +81,6 @@
       editTarget = { categoria: null, id: null };
       modalAgregarTitle.textContent = "Agregar producto";
       formAgregar.reset();
-      inpImagen.value = "";
       inpFilename.value = "";
       openModal(modalAgregar);
     });
