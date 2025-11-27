@@ -160,7 +160,6 @@ window.openEditarProducto = function (id) {
       if (inpPrecio) inpPrecio.value = p.precio || 0;
       if (inpDescripcion) inpDescripcion.value = p.descripcion || "";
       if (inpDisponible) inpDisponible.checked = p.disponible ? true : false;
-      if (inpImagen) inpImagen.value = p.img || "";
       if (inpFile) inpFile.value = ""; 
       if (inpFilename) inpFilename.value = "";
 
