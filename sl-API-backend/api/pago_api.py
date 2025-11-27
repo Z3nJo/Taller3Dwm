@@ -44,7 +44,7 @@ async def crear_transaccion(data: dict):
             buy_order=buy_order,
             session_id=session_id,
             amount=amount,
-            return_url="https://slapi.onrender.com/pago/confirmar"
+            return_url="https://slapi.onrender.com/pago/webpay/confirmar"
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
