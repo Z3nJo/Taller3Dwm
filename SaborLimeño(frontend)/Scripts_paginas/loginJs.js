@@ -67,7 +67,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
                 resetIdleTimer();
                 intentosFallidos = 0;
-                window.location.href = "inicio.html";
+                window.location.href = "index.html";
             } else {
                 intentosFallidos++;
                 if (intentosFallidos >= MAX_INTENTOS) {

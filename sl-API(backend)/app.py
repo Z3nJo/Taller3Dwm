@@ -18,9 +18,12 @@ os.makedirs(MEDIA_DIR, exist_ok=True)
 
 app.mount("/media", StaticFiles(directory=MEDIA_DIR), name="media")
 
+FRONTEND_URL = os.getenv("FRONTEND_URL", "")
+LOCAL_DEV = "http://127.0.0.1:5500"
+
 origins = [
-    "http://127.0.0.1:5500",  
-    "http://localhost",  
+    LOCAL_DEV,
+    FRONTEND_URL
 ]
 
 app.add_middleware(
