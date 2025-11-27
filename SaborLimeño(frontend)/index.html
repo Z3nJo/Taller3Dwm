@@ -179,7 +179,7 @@
         if (!correoUsuario) return; // No logueado, no mostrar nada
 
         // Obtener usuario desde el backend
-        const res = await fetch(`http://127.0.0.1:8000/usuario/${encodeURIComponent(correoUsuario)}`);
+        const res = await fetch(`https://slapi.onrender.com/usuario/${encodeURIComponent(correoUsuario)}`);
         if (!res.ok) throw new Error("No se pudo obtener el usuario");
 
         const usuario = await res.json();

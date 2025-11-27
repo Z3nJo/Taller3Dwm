@@ -45,7 +45,7 @@
 
       let idUsuario = null;
       try {
-          const respUser = await fetch(`http://127.0.0.1:8000/usuario/${encodeURIComponent(correoUsuario)}`);
+          const respUser = await fetch(`https://slapi.onrender.com/usuario/${encodeURIComponent(correoUsuario)}`);
           const usuario = await respUser.json();
           idUsuario = usuario._id || usuario.id;
           document.getElementById("nombre-cliente").textContent = `Cliente: ${usuario.nombre}`;
@@ -89,7 +89,7 @@
 
       // 4) Crear pedido
       try {
-          const respPedido = await fetch(`http://127.0.0.1:8000/pedido/confirmar/${idUsuario}?total=${total}`, {
+          const respPedido = await fetch(`https://slapi.onrender.com/pedido/confirmar/${idUsuario}?total=${total}`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({

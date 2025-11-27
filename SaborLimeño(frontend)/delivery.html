@@ -83,7 +83,7 @@
 
     if (correoUsuario) {
       try {
-        const resp = await fetch(`http://127.0.0.1:8000/usuario/${encodeURIComponent(correoUsuario)}`);
+        const resp = await fetch(`https://slapi.onrender.com/usuario/${encodeURIComponent(correoUsuario)}`);
         const usuario = await resp.json();
         idUsuario = usuario._id;
         document.getElementById("cliente-nombre").textContent = usuario.nombre || "—";
@@ -136,7 +136,7 @@
 
       // Crear pago pendiente
       try {
-        const pagoRes = await fetch("http://127.0.0.1:8000/pago/", {
+        const pagoRes = await fetch("https://slapi.onrender.com/pago/", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ idUsuario, monto: total, metodo: metodoPago, estado: "pendiente" })
@@ -146,7 +146,7 @@
 
         if (metodoPago === "tarjeta") {
           // Solicitar token Webpay y enviar formulario automáticamente
-          const webpayRes = await fetch("http://127.0.0.1:8000/pago/webpay", {
+          const webpayRes = await fetch("https://slapi.onrender.com/pago/webpay", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ idUsuario, monto: total })
@@ -191,13 +191,13 @@
       if (!idUsuario) { console.error("❌ No existe idUsuario"); return; }
 
       try {
-        const respPago = await fetch(`http://127.0.0.1:8000/pago/${idUsuario}`);
+        const respPago = await fetch(`https://slapi.onrender.com/pago/${idUsuario}`);
         const pagos = await respPago.json();
         const pagoPendiente = pagos.find(p => p.estado === "pendiente");
 
         if (!pagoPendiente) { console.error("❌ No se encontró pago pendiente."); return; }
 
-        await fetch(`http://127.0.0.1:8000/pago/${pagoPendiente._id}`, {
+        await fetch(`https://slapi.onrender.com/pago/${pagoPendiente._id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ metodo: "efectivo", estado: "completado" })

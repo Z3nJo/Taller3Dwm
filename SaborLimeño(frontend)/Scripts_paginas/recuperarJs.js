@@ -8,7 +8,7 @@ async function recuperar() {
 
     try {
         // Verificar token con backend
-        const res = await fetch("http://127.0.0.1:8000/auth/verificar-token", {
+        const res = await fetch("https://slapi.onrender.com/auth/verificar-token", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ token: tokenIngresado })
@@ -62,7 +62,7 @@ async function cambiarContraseña() {
 
     try {
         // Llamar al endpoint /usuario/recuperar con la nueva contraseña
-        const res = await fetch("http://127.0.0.1:8000/usuario/recuperar", {
+        const res = await fetch("https://slapi.onrender.com/usuario/recuperar", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({

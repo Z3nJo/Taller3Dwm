@@ -109,13 +109,13 @@
     // -------------------------------------------------------
     async function cargarHistorial() {
       try {
-        const resUser = await fetch(`http://127.0.0.1:8000/usuario/${encodeURIComponent(correoUsuario)}`);
+        const resUser = await fetch(`https://slapi.onrender.com/usuario/${encodeURIComponent(correoUsuario)}`);
         if (!resUser.ok) throw new Error("No se pudo obtener el usuario");
 
         const usuario = await resUser.json();
         const idUsuario = usuario._id;
 
-        const resHist = await fetch(`http://127.0.0.1:8000/pedido/${idUsuario}`);
+        const resHist = await fetch(`https://slapi.onrender.com/pedido/${idUsuario}`);
         const pedidosUsuario = await resHist.json();
 
         renderizarPedidos(pedidosUsuario);
@@ -215,7 +215,7 @@
       if (!confirm("¿Deseas cancelar este pedido?")) return;
 
       try {
-        const res = await fetch(`http://127.0.0.1:8000/pedido/${id}`, {
+        const res = await fetch(`https://slapi.onrender.com/pedido/${id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ estado: "cancelado" })
@@ -240,23 +240,23 @@
         const correo = sessionStorage.getItem("correoUsuario");
         if (!correo) return alert("No hay sesión activa.");
 
-        const resUser = await fetch(`http://127.0.0.1:8000/usuario/${encodeURIComponent(correo)}`);
+        const resUser = await fetch(`https://slapi.onrender.com/usuario/${encodeURIComponent(correo)}`);
         const usuario = await resUser.json();
         const idUsuario = usuario._id;
 
-        const resPedido = await fetch(`http://127.0.0.1:8000/pedido/detalle/${idPedido}`);
+        const resPedido = await fetch(`https://slapi.onrender.com/pedido/detalle/${idPedido}`);
         const pedidoCompleto = await resPedido.json();
 
         const items = pedidoCompleto.items || [];
         if (items.length === 0) return alert("El pedido no tiene productos.");
 
-        await fetch(`http://127.0.0.1:8000/carrito/${idUsuario}/clear`, { method: "POST" });
+        await fetch(`https://slapi.onrender.com/carrito/${idUsuario}/clear`, { method: "POST" });
 
         let carritoLocal = [];
 
         for (const item of items) {
           await fetch(
-            `http://127.0.0.1:8000/carrito/${idUsuario}/add?idProducto=${encodeURIComponent(item.idProducto)}&cantidad=${encodeURIComponent(item.cantidad)}`,
+            `https://slapi.onrender.com/carrito/${idUsuario}/add?idProducto=${encodeURIComponent(item.idProducto)}&cantidad=${encodeURIComponent(item.cantidad)}`,
             { method: "POST" }
           );
 

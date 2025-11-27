@@ -1,5 +1,5 @@
 (async function () {
-  const API_URL = "http://127.0.0.1:8000/producto";
+  const API_URL = "https://slapi.onrender.com";
 
   // Estado global
   let productos = {};
@@ -51,7 +51,7 @@
 
       // Si la ruta ya contiene "media/" la dejamos, si no la asumimos tal cual
       // Resultado final apuntando al backend
-      return `http://127.0.0.1:8000/${img}`;
+      return `https://slapi.onrender.com/${img}`;
   }
 
   function safeImg(imgEl, fallback) {
@@ -73,7 +73,7 @@
           if (correo) {
               try {
                   // Obtener usuario desde el correo
-                  const userRes = await fetch(`http://127.0.0.1:8000/usuario/${encodeURIComponent(correo)}`);
+                  const userRes = await fetch(`https://slapi.onrender.com/usuario/${encodeURIComponent(correo)}`);
 
                   if (userRes.ok) {
                       const user = await userRes.json();
@@ -84,7 +84,7 @@
                       console.log("🗑 Borrando carrito del usuario", idUsuario);
 
                       if (idUsuario) {
-                          await fetch(`http://127.0.0.1:8000/carrito/${idUsuario}/delete`, {
+                          await fetch(`https://slapi.onrender.com/carrito/${idUsuario}/delete`, {
                               method: "DELETE"
                           });
                       } else {
@@ -438,7 +438,7 @@
 
     try {
       const correoEncoded = encodeURIComponent(correo);
-      const res = await fetch(`http://127.0.0.1:8000/usuario/${correoEncoded}`);
+      const res = await fetch(`https://slapi.onrender.com/usuario/${correoEncoded}`);
       if (!res.ok) {
         console.warn("⚠ No se pudo obtener usuario desde backend.");
         return null;

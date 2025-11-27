@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             console.log("📤 Enviando usuario a API:", nuevoUsuario);
 
-            const response = await fetch("http://127.0.0.1:8000/usuario/registro", {
+            const response = await fetch("https://slapi.onrender.com/usuario/registro", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

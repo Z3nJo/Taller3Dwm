@@ -96,7 +96,7 @@
   document.addEventListener("DOMContentLoaded", async () => {
       if (correoUsuario) {
           try {
-              const res = await fetch(`http://127.0.0.1:8000/usuario/${encodeURIComponent(correoUsuario)}`);
+              const res = await fetch(`https://slapi.onrender.com/usuario/${encodeURIComponent(correoUsuario)}`);
               if (res.ok) {
                   const data = await res.json();
                   idUsuario = data._id || data.id || null;
@@ -150,7 +150,7 @@
       const pagoObj = { idUsuario, monto: total, metodo, estado: "pendiente" };
 
       try {
-          const pagoRes = await fetch("http://127.0.0.1:8000/pago/", {
+          const pagoRes = await fetch("https://slapi.onrender.com/pago/", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify(pagoObj)
@@ -174,7 +174,7 @@
       if (!monto || isNaN(monto)) { alert("Error: monto inválido."); return; }
 
       try {
-          const response = await fetch("http://127.0.0.1:8000/pago/webpay", {
+          const response = await fetch("https://slapi.onrender.com/pago/webpay", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ idUsuario, monto })

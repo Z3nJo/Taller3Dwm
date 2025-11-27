@@ -15,7 +15,7 @@ async function recModal(event) {
 
     try {
         // Solicitar token al backend
-        const res = await fetch("http://127.0.0.1:8000/auth/enviar-token-recuperacion", {
+        const res = await fetch("https://slapi.onrender.com/auth/enviar-token-recuperacion", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ correo })

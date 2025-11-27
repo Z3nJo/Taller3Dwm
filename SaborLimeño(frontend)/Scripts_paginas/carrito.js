@@ -29,7 +29,7 @@ async function cargarCarrito() {
 
   try {
     // obtener idUsuario desde backend
-    const resUsuario = await fetch(`http://127.0.0.1:8000/usuario/${encodeURIComponent(correoUsuario)}`);
+    const resUsuario = await fetch(`https://slapi.onrender.com/usuario/${encodeURIComponent(correoUsuario)}`);
     if (!resUsuario.ok) throw new Error("No se pudo obtener usuario");
     const usuario = await resUsuario.json();
     idUsuario = usuario._id || usuario.id || null;
@@ -41,7 +41,7 @@ async function cargarCarrito() {
       return;
     }
 
-    const resCarrito = await fetch(`http://127.0.0.1:8000/carrito/${idUsuario}`);
+    const resCarrito = await fetch(`https://slapi.onrender.com/carrito/${idUsuario}`);
     if (!resCarrito.ok) {
       // fallback a local si el endpoint falla
       throw new Error("No se pudo obtener carrito");
@@ -72,7 +72,7 @@ async function cargarCarrito() {
       if (!idProd) continue;
 
       try {
-        const resProd = await fetch(`http://127.0.0.1:8000/producto/${encodeURIComponent(idProd)}`);
+        const resProd = await fetch(`https://slapi.onrender.com/producto/${encodeURIComponent(idProd)}`);
         if (!resProd.ok) throw new Error("Producto no encontrado");
         const prod = await resProd.json();
 
@@ -82,7 +82,7 @@ async function cargarCarrito() {
         else if (!/^https?:\/\//i.test(imgUrl)) {
           // asegurar que la ruta sea accesible por el servidor (ajusta host si es otro)
           imgUrl = imgUrl.replace(/^[\/]+/, ""); // quitar slashes iniciales
-          imgUrl = `http://127.0.0.1:8000/${imgUrl}`;
+          imgUrl = `https://slapi.onrender.com/${imgUrl}`;
         }
 
         finalCarrito.push({
@@ -114,7 +114,7 @@ async function syncAdd(idProducto, cantidad) {
   if (!backendActivo || !idUsuario || !idProducto) return;
   try {
     await fetch(
-      `http://127.0.0.1:8000/carrito/${encodeURIComponent(idUsuario)}/add?idProducto=${encodeURIComponent(idProducto)}&cantidad=${encodeURIComponent(cantidad)}`,
+      `https://slapi.onrender.com/carrito/${encodeURIComponent(idUsuario)}/add?idProducto=${encodeURIComponent(idProducto)}&cantidad=${encodeURIComponent(cantidad)}`,
       { method: "POST" }
     );
   } catch (err) {
@@ -126,7 +126,7 @@ async function syncRemove(idProducto) {
   if (!backendActivo || !idUsuario || !idProducto) return;
   try {
     await fetch(
-      `http://127.0.0.1:8000/carrito/${encodeURIComponent(idUsuario)}/remove?idProducto=${encodeURIComponent(idProducto)}`,
+      `https://slapi.onrender.com/carrito/${encodeURIComponent(idUsuario)}/remove?idProducto=${encodeURIComponent(idProducto)}`,
       { method: "POST" }
     );
   } catch (err) {
@@ -138,7 +138,7 @@ async function syncClear() {
   if (!backendActivo || !idUsuario) return;
   try {
     await fetch(
-      `http://127.0.0.1:8000/carrito/${encodeURIComponent(idUsuario)}/clear`,
+      `https://slapi.onrender.com/carrito/${encodeURIComponent(idUsuario)}/clear`,
       { method: "POST" }
     );
   } catch (err) {
@@ -310,7 +310,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const correoUsuario = sessionStorage.getItem("correoUsuario");
   if (correoUsuario) {
     try {
-      const res = await fetch(`http://127.0.0.1:8000/usuario/${encodeURIComponent(correoUsuario)}`);
+      const res = await fetch(`https://slapi.onrender.com/usuario/${encodeURIComponent(correoUsuario)}`);
       if (res.ok) {
         const data = await res.json();
         idUsuario = data._id || data.id || null;

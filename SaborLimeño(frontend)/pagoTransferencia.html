@@ -100,7 +100,7 @@
       try {
         // 1. Obtener idUsuario
         const encodedCorreo = encodeURIComponent(correoUsuario);
-        const userResp = await fetch(`http://127.0.0.1:8000/usuario/${encodedCorreo}`);
+        const userResp = await fetch(`https://slapi.onrender.com/usuario/${encodedCorreo}`);
         if (!userResp.ok) {
           console.error("Error al obtener idUsuario:", await userResp.text());
           return;
@@ -110,7 +110,7 @@
         console.log("🟢 idUsuario obtenido:", idUsuario);
 
         // 2. Obtener pagos de este usuario
-        const pagosResp = await fetch(`http://127.0.0.1:8000/pago/${idUsuario}`);
+        const pagosResp = await fetch(`https://slapi.onrender.com/pago/${idUsuario}`);
         if (!pagosResp.ok) {
           console.error("Error al obtener pagos:", await pagosResp.text());
           return;
@@ -125,7 +125,7 @@
         }
 
         // 4. Actualizar estado a completado
-        const updateResp = await fetch(`http://127.0.0.1:8000/pago/${pagoPendiente._id}`, {
+        const updateResp = await fetch(`https://slapi.onrender.com/pago/${pagoPendiente._id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ estado: "completado" })

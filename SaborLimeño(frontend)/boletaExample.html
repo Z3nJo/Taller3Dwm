@@ -78,7 +78,7 @@
       // OBTENER ÚLTIMO PEDIDO DEL USUARIO DESDE BACKEND
       async function cargarPedidoDesdeBackend() {
         try {
-          const resUser = await fetch(`http://127.0.0.1:8000/usuario/${encodeURIComponent(correoUsuario)}`);
+          const resUser = await fetch(`https://slapi.onrender.com/usuario/${encodeURIComponent(correoUsuario)}`);
           const usuario = await resUser.json();
           const idUsuario = usuario._id;
 
@@ -87,7 +87,7 @@
             return;
           }
 
-          const resPedidos = await fetch(`http://127.0.0.1:8000/pedido/${idUsuario}`);
+          const resPedidos = await fetch(`https://slapi.onrender.com/pedido/${idUsuario}`);
           const pedidos = await resPedidos.json();
 
           if (!Array.isArray(pedidos) || pedidos.length === 0) {

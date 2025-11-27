@@ -25,9 +25,9 @@
 
 
   // CONFIG API
-  const API_PRODUCTOS = "http://127.0.0.1:8000/producto";
-  const API_USUARIO = "http://127.0.0.1:8000/usuario";
-  const API_UPLOAD_IMAGE = "http://127.0.0.1:8000/producto/upload-image";
+  const API_PRODUCTOS = "https://slapi.onrender.com/producto";
+  const API_USUARIO = "https://slapi.onrender.com/usuario";
+  const API_UPLOAD_IMAGE = "https://slapi.onrender.com/producto/upload-image";
 
   let isEditing = false;
   let editTarget = { categoria: null, id: null };

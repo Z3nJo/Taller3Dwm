@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         try {
             console.log("📡 Enviando datos al backend...");
-            const respuesta = await fetch("http://127.0.0.1:8000/auth/login", {
+            const respuesta = await fetch("https://slapi.onrender.com/auth/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ correo: correo, passw: password })
