@@ -1,7 +1,9 @@
 // catalogoAdmin.js
 (function () {
 
+  // -----------------------------
   // ELEMENTOS DEL DOM
+  // -----------------------------
   const btnEditar = document.getElementById("btn-editar");
   const adminControls = document.getElementById("admin-controls");
   const btnAbrirAgregar = document.getElementById("btn-abrir-agregar");
@@ -17,13 +19,12 @@
   const inpNombre = document.getElementById("nombre-producto");
   const inpCategoria = document.getElementById("categoria-producto");
   const inpPrecio = document.getElementById("precio-producto");
-  const inpFile = document.getElementById("imagen-producto-file"); 
-  const inpFilename = document.getElementById("filename-producto"); 
+  const inpFile = document.getElementById("imagen-producto-file");
+  const inpFilename = document.getElementById("filename-producto");
   const inpDescripcion = document.getElementById("descripcion-producto");
   const inpDisponible = document.getElementById("disponible-producto");
 
-
-  // CONFIG API
+  // Config URLs API
   const API_PRODUCTOS = "https://slapi.onrender.com/producto";
   const API_USUARIO = "https://slapi.onrender.com/usuario";
   const API_UPLOAD_IMAGE = "https://slapi.onrender.com/producto/upload-image";
@@ -31,10 +32,13 @@
   let isEditing = false;
   let editTarget = { categoria: null, id: null };
 
-  // CARGAR USUARIO
+  // -----------------------------
+  // Cargar usuario actual
+  // -----------------------------
   async function cargarUsuario() {
     const correo = sessionStorage.getItem("correoUsuario");
     if (!correo) return null;
+
     try {
       const res = await fetch(`${API_USUARIO}/${encodeURIComponent(correo)}`);
       if (!res.ok) return null;
@@ -45,19 +49,25 @@
     }
   }
 
-  // INICIAR ADMIN
+  // -----------------------------
+  // Inicializar modo admin
+  // -----------------------------
   async function initAdmin() {
     const user = await cargarUsuario();
+
     if (!user || user.rol !== "admin") {
       btnEditar.style.display = "none";
       adminControls.style.display = "none";
       return;
     }
+
     window.usuarioActual = user;
     activarLogicaAdmin();
   }
 
-  // LÓGICA ADMIN
+  // -----------------------------
+  // Activar lógica Admin
+  // -----------------------------
   function activarLogicaAdmin() {
 
     btnEditar.addEventListener("click", () => {
@@ -91,7 +101,10 @@
       if (e.target === modalAgregar) closeModal(modalAgregar);
     });
 
-    // GUARDAR PRODUCTO
+
+    // -----------------------------
+    // GUARDAR PRODUCTO (crear o editar)
+    // -----------------------------
     formAgregar.addEventListener("submit", async (e) => {
       e.preventDefault();
 
@@ -101,8 +114,10 @@
       const descripcion = inpDescripcion.value.trim();
       const stock = inpDisponible.checked ? 1 : 0;
       const filename = inpFilename.value.trim();
+      const archivoImagen = inpFile.files?.[0] || null;
 
-      if (!nombre || !categoria) return alert("Nombre y categoría son obligatorios");
+      if (!nombre || !categoria)
+        return alert("Nombre y categoría son obligatorios");
 
       const payload = {
         nombre,
@@ -110,22 +125,22 @@
         precio,
         descripcion,
         stock,
-        img: "/media/plato.png" // placeholder por defecto
+        img: "/media/plato.png" // default
       };
 
-      const archivoImagen = inpFile.files?.[0] || null;
-
       try {
-        // Subir imagen si seleccionó archivo
+        // Si sube imagen → subir archivo
         if (archivoImagen) {
           const urlImagen = await subirImagen(archivoImagen, filename || null);
           payload.img = urlImagen;
-        } else if (filename) {
-          // Solo cambió nombre de archivo
+        }
+
+        // Si solo cambia el nombre
+        else if (filename) {
           payload.img = "/media/" + filename;
         }
 
-        // PUT o POST según sea edición o creación
+        // Crear o Editar
         if (isEditing && editTarget.id) {
           await actualizarProductoBackend(editTarget.id, payload);
           alert("Producto actualizado");
@@ -134,7 +149,7 @@
           alert("Producto agregado");
         }
 
-        // Recargar catálogo
+        // Actualizar catálogo
         if (window.cargarProductosBackend) await window.cargarProductosBackend();
         window.mostrarCatalogo(isEditing);
         closeModal(modalAgregar);
@@ -145,32 +160,40 @@
       }
     });
 
-// EDITAR DESDE TARJETA
-window.openEditarProducto = function (id) {
-  for (const cat in window.productos) {
-    const p = window.productos[cat].find(x => x.id === id);
-    if (p) {
-      isEditing = true;
-      editTarget = { categoria: cat, id };
-      modalAgregarTitle.textContent = "Editar producto";
 
-      // Solo asignamos los valores si los inputs existen
-      if (inpNombre) inpNombre.value = p.nombre || "";
-      if (inpCategoria) inpCategoria.value = cat || "";
-      if (inpPrecio) inpPrecio.value = p.precio || 0;
-      if (inpDescripcion) inpDescripcion.value = p.descripcion || "";
-      if (inpDisponible) inpDisponible.checked = p.disponible ? true : false;
-      if (inpFile) inpFile.value = ""; 
-      if (inpFilename) inpFilename.value = "";
+    // -----------------------------
+    // ABRIR modal para Editar
+    // -----------------------------
+    window.openEditarProducto = function (id) {
 
-      openModal(modalAgregar);
-      return;
-    }
-  }
-  alert("Producto no encontrado");
-};
+      for (const cat in window.productos) {
+        const p = window.productos[cat].find(x => x.id === id);
+        if (p) {
+          isEditing = true;
+          editTarget = { categoria: cat, id };
+          modalAgregarTitle.textContent = "Editar producto";
 
-    // 8) ELIMINAR
+          if (inpNombre) inpNombre.value = p.nombre || "";
+          if (inpCategoria) inpCategoria.value = cat || "";
+          if (inpPrecio) inpPrecio.value = p.precio || 0;
+          if (inpDescripcion) inpDescripcion.value = p.descripcion || "";
+          if (inpDisponible) inpDisponible.checked = p.disponible ? true : false;
+
+          if (inpFile) inpFile.value = "";
+          if (inpFilename) inpFilename.value = "";
+
+          openModal(modalAgregar);
+          return;
+        }
+      }
+
+      alert("Producto no encontrado");
+    };
+
+
+    // -----------------------------
+    // ELIMINAR PRODUCTO
+    // -----------------------------
     window.eliminarProducto = async function (id) {
       if (!confirm("¿Eliminar este producto?")) return;
       await eliminarProductoBackend(id);
@@ -180,7 +203,9 @@ window.openEditarProducto = function (id) {
     };
   }
 
+  // -----------------------------
   // SUBIR IMAGEN
+  // -----------------------------
   async function subirImagen(file, filename = null) {
     const formData = new FormData();
     formData.append("file", file);
@@ -200,7 +225,9 @@ window.openEditarProducto = function (id) {
     return data.url || "/media/plato.png";
   }
 
-  // CREAR PRODUCTO BACKEND
+  // -----------------------------
+  // Crear producto
+  // -----------------------------
   async function crearProductoBackend(payload) {
     const usuarioHeader = window.usuarioActual?.correo || "admin";
 
@@ -215,14 +242,15 @@ window.openEditarProducto = function (id) {
 
     if (!resp.ok) {
       const text = await resp.text().catch(() => null);
-      console.error("Error creando producto. Status:", resp.status, "Response:", text);
       throw new Error("Error creando producto: " + (text || resp.status));
     }
 
-    return await resp.json();
+    return resp.json();
   }
 
-  // ACTUALIZAR PRODUCTO BACKEND
+  // -----------------------------
+  // Actualizar producto
+  // -----------------------------
   async function actualizarProductoBackend(id, payload) {
     const usuarioHeader = window.usuarioActual?.correo || "admin";
 
@@ -237,14 +265,15 @@ window.openEditarProducto = function (id) {
 
     if (!resp.ok) {
       const text = await resp.text().catch(() => null);
-      console.error("Error actualizando producto. Status:", resp.status, "Response:", text);
       throw new Error("Error actualizando producto: " + (text || resp.status));
     }
 
-    return await resp.json();
+    return resp.json();
   }
 
-  // ELIMINAR PRODUCTO BACKEND
+  // -----------------------------
+  // Eliminar producto
+  // -----------------------------
   async function eliminarProductoBackend(id) {
     const usuarioHeader = window.usuarioActual?.correo || "admin";
 
@@ -255,25 +284,28 @@ window.openEditarProducto = function (id) {
 
     if (!resp.ok) {
       const text = await resp.text().catch(() => null);
-      console.error("Error eliminando producto. Status:", resp.status, "Response:", text);
       throw new Error("Error eliminando producto: " + (text || resp.status));
     }
 
-    return await resp.json();
+    return resp.json();
   }
 
-  // MODALES
+  // -----------------------------
+  // Modales
+  // -----------------------------
   function openModal(el) {
     el.classList.add("open");
     el.setAttribute("aria-hidden", "false");
     document.body.style.overflow = "hidden";
   }
+
   function closeModal(el) {
     el.classList.remove("open");
     el.setAttribute("aria-hidden", "true");
     document.body.style.overflow = "";
   }
 
+  // Inicializar admin
   initAdmin();
 
 })();
