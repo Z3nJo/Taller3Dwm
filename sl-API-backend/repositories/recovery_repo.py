@@ -1,8 +1,11 @@
 # repositories/recovery_repo.py
 from motor.motor_asyncio import AsyncIOMotorClient
 from datetime import datetime
+import os
 
-client = AsyncIOMotorClient("mongodb://localhost:27017")
+MONGO_URI = os.getenv("MONGO_URI")
+
+client = AsyncIOMotorClient(MONGO_URI)
 db = client["db"]
 
 class RecoveryTokenRepository:
