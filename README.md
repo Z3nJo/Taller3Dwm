@@ -1,4 +1,4 @@
-### RCTVRP: Risk-constrained Cash-in-Transit Vehicle Routing Problem
+# RCTVRP: Risk-constrained Cash-in-Transit Vehicle Routing Problem
 Este repositorio contiene la implementación y análisis para el problema **RCTVRP (Risk-constrained Cash-in-Transit Vehicle Routing Problem)**, desarrollado como parte del curso de **Optimización (OPT)** del **Semestre 7**.
 
 #### 👥 Integrantes
