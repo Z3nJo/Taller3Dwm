@@ -1,76 +1,57 @@
-# RCTSP: Resource-Constrained Traveling Salesperson Problem
+### RCTVRP: Risk-constrained Cash-in-Transit Vehicle Routing Problem
+Este repositorio contiene la implementación y análisis para el problema **RCTVRP (Risk-constrained Cash-in-Transit Vehicle Routing Problem)**, desarrollado como parte del curso de **Optimización (OPT)** del **Semestre 7**.
 
-Este repositorio contiene la implementación y análisis para el problema **RCTSP (Resource-Constrained Traveling Salesperson Problem)**, desarrollado como parte del curso de **Optimización (OPT)** del **Semestre 7**.
-
-## 👥 Integrantes
+#### 👥 Integrantes
 *   **Matias Santos**
 *   **Jose Romero**
 *   **David Cortez**
 
----
+--------------------------------------------------------------------------------
 
-## Introducción al Problema
+#### Introducción al Problema
+##### ¿Qué es el VRP (Vehicle Routing Problem)?
+El **Problema de Ruteo de Vehículos (VRP)** es un nombre genérico para una clase de problemas que consisten en diseñar rutas óptimas para una flota de vehículos que debe visitar a un conjunto de clientes dispersos geográficamente desde uno o más depósitos.
+*   **Por qué importa:** Es fundamental para determinar estrategias eficientes que reduzcan costos operacionales en redes de distribución. Está clasificado como **NP-duro**, lo que dificulta su resolución exacta para conjuntos de datos grandes en tiempos aceptables.
+*   **Dónde aparece:** Gestión de cadenas de suministro, recolección de residuos, transporte de materiales peligrosos y distribución de mercancías en general.
 
-### ¿Qué es el TSP (Traveling Salesperson Problem)?
-El **Problema del Agente Viajero (TSP)** es uno de los problemas de optimización combinatoria más estudiados en la historia. Consiste en encontrar la ruta de menor costo (o distancia) que visite un conjunto de ciudades exactamente una vez y regrese al punto de partida original.
+--------------------------------------------------------------------------------
 
-*   **Por qué importa:** Es un problema clásico de la teoría de grafos y optimización combinatoria. Está clasificado como **NP-duro**, lo que significa que no se conoce un algoritmo de tiempo polinomial para resolverlo de forma exacta a medida que el número de ciudades crece significativamente.
-*   **Dónde aparece:** Tiene aplicaciones masivas en logística, ruteo de vehículos, planificación de entregas, diseño de microchips, perforación de placas de circuito y problemas de recorridos en general.
+##### ¿Qué es el RCTVRP (Risk-constrained Cash-in-Transit VRP)?
+El **Risk-constrained Cash-in-Transit VRP (RCTVRP)** es una variante especializada del VRP diseñada para la industria del transporte de valores (efectivo, joyas, bienes valiosos). En este problema, la seguridad es el aspecto crítico y se trata como el principal factor limitante en lugar de la capacidad física del vehículo.
 
----
+En el RCTVRP:
+1. El riesgo asociado a un robo se asume **proporcional a la cantidad de efectivo transportado** y a la **distancia o tiempo recorrido** por el vehículo.
+2. El objetivo es definir un conjunto de rutas que **minimicen la distancia total recorrida**, asegurando que cada cliente sea visitado exactamente una vez.
+3. Se impone una **restricción de riesgo estricta**: el riesgo global acumulado en cada ruta no debe exceder un umbral de riesgo predefinido ($T$).
 
-### ¿Qué es el RCTSP (Resource-Constrained TSP)?
-El **Problema del Agente Viajero con Restricciones de Recursos (RCTSP)** es una generalización avanzada del TSP estándar. En el mundo real, no basta con simplemente minimizar la distancia o el costo; los vehículos y agentes operan bajo **restricciones físicas y operativas estrictas** (recursos limitados).
+###### Formulación de Riesgo Acumulado
+El índice de riesgo $R_j^r$ para un nodo $j$ en una ruta $r$ se calcula de forma recursiva basándose en la carga acumulada:
+$$R_j^r = R_i^r + P_i^r \cdot d_{ij}$$
+Donde $P_i^r$ es el efectivo a bordo tras visitar el nodo $i$ y $d_{ij}$ es la distancia del arco. Debido a que la carga aumenta tras cada recogida, el riesgo es acumulativo y **no simétrico**.
 
-En el RCTSP:
-1.  Cada arco (o trayecto) entre dos ciudades $i$ y $j$ tiene asociado un **costo** $c_{ij}$ y un **consumo de recurso** $r_{ij}$ (por ejemplo, combustible, tiempo, batería o presupuesto).
-2.  El objetivo es encontrar un ciclo hamiltoniano (un recorrido que visite cada ciudad exactamente una vez y regrese al origen) que **minimice el costo total**, asegurando que **el consumo acumulado del recurso no exceda un límite máximo predefinido $R_{\max}$**.
-
-$$\min \sum_{(i,j) \in A} c_{ij} x_{ij}$$
-$$\text{Sujeto a: } \sum_{(i,j) \in A} r_{ij} x_{ij} \le R_{\max}$$
-$$\text{(y las restricciones estándar de ciclo hamiltoniano del TSP)}$$
-
-#### Diferencias Clave
-| Característica | TSP Estándar | RCTSP (Resource-Constrained) |
+###### Diferencias Clave
+| Característica | VRP Tradicional | RCTVRP (Risk-constrained) |
 | :--- | :--- | :--- |
-| **Objetivo** | Minimizar costo o distancia total. | Minimizar costo o distancia total. |
-| **Restricciones** | Visitar cada ciudad exactamente una vez y volver al inicio. | Visitar cada ciudad exactamente una vez, volver al inicio **y no exceder $R_{\max}$**. |
-| **Factibilidad** | Encontrar una solución factible es trivial (cualquier permutación de ciudades). | Encontrar una solución que sea factible (que cumpla con la restricción de recursos) es un problema NP-completo por sí mismo. |
-| **Generalización** | Caso particular del RCTSP cuando $R_{\max} = \infty$. | Generaliza problemas complejos como el *Prize Collecting TSP* y el *Orienteering Problem*. |
+| **Objetivo** | Minimizar costo o distancia total. | Minimizar costo manteniendo la seguridad. |
+| **Restricción Principal** | Capacidad física de carga del vehículo ($Q$). | Umbral de riesgo máximo permitido ($T$). |
+| **Simetría** | Generalmente simétrico (costo $i \to j$ igual a $j \to i$). | **No simétrico**: el riesgo cambia según el orden de visita debido a la carga acumulada. |
+| **Dificultad de Factibilidad** | Encontrar una solución factible es relativamente simple. | Es complejo, ya que una ruta puede ser factible en un sentido pero exceder el riesgo en el inverso. |
 
----
+--------------------------------------------------------------------------------
 
-## Aplicaciones del RCTSP
-*   **Vehículos Eléctricos (EVs):** Minimizar el tiempo de viaje con restricciones de capacidad de batería ($R_{\max}$).
-*   **Rutas de Drones (UAS):** Planificación de trayectos de inspección aérea donde el dron debe regresar antes de agotar su batería o combustible.
-*   **Logística con Plazos de Entrega:** Minimizar la distancia recorrida bajo ventanas de tiempo o plazos de entrega acumulados (donde el tiempo es el recurso limitado).
-*   **Planificación de Producción:** Secuenciación de tareas en una máquina con costos de cambio y plazos agregados de entrega.
+#### Aplicaciones del RCTVRP
+*   **Sector Bancario y ATMs:** Distribución y recolección de billetes y monedas entre bancos centrales y cajeros automáticos.
+*   **Gran Comercio (Retail):** Recolección de ingresos diarios en centros comerciales, joyerías, casinos y grandes tiendas minoristas.
+*   **Transporte de Materiales Críticos:** Aunque enfocado en efectivo, el modelo es aplicable a la recogida de sustancias peligrosas o químicos valiosos donde el tiempo de exposición aumenta el peligro de un incidente.
 
----
+--------------------------------------------------------------------------------
 
-## Métodos de Resolución
-Dado que el RCTSP es un problema NP-duro, su resolución requiere diferentes enfoques dependiendo del tamaño de la instancia:
+#### Métodos de Resolución
+Dado que el RCTVRP es un problema combinatorio complejo, se utilizan diversos enfoques:
+##### 1. Métodos Exactos (Instancias pequeñas)
+*   **Programación Lineal Entera Mixta (MILP):** Resolviendo formulaciones matemáticas que utilizan variables de decisión binarias para representar el flujo en los arcos y variables continuas para el riesgo acumulado.
 
-### 1. Métodos Exactos (para problemas pequeños/medianos)
-*   **Programación Lineal Entera (ILP):** Formulación matemática resuelta por solvers optimizados como Gurobi o CPLEX.
-*   **Branch-and-Bound / Branch-and-Cut:** Ramificación y acotación inteligente de soluciones.
-*   **Relajación Lagrangiana:** Permite mover la restricción de recursos a la función objetivo con un penalizador, facilitando la obtención de cotas inferiores.
-
-### 2. Heurísticas y Metaheurísticas (para problemas grandes)
-Cuando las instancias tienen cientos o miles de ciudades, los métodos exactos tardan demasiado tiempo. Se emplean:
-*   **Búsqueda Tabú (Tabu Search):** Explora el espacio de soluciones evitando caer en óptimos locales mediante una lista de movimientos prohibidos.
-*   **Algoritmos Genéticos (GA):** Evolucionan una población de rutas a través de cruzamientos y mutaciones para encontrar la de menor costo factible.
-*   **Recocido Simulado (Simulated Annealing):** Metaheurística basada en el enfriamiento físico de metales para escapar de óptimos locales.
-
----
-
-## 📁 Estructura del Proyecto
-*(La estructura se irá completando a medida que se implementen los algoritmos)*
-```text
-.
-├── src/                  # Código fuente de las implementaciones
-├── data/                 # Instancias de prueba del problema (.tsp, .txt)
-├── docs/                 # Documentación adicional y reportes
-├── README.md             # Información general del proyecto
-└── .gitignore            # Archivos a ignorar en el repositorio
-```
+##### 2. Metaheurísticas (Instancias grandes)
+*   **LKH-3:** Uno de los mejores resolvedores heurísticos actuales. Transforma el problema en un TSP simétrico estándar usando **funciones de penalización** para manejar el riesgo, priorizando la factibilidad de la ruta antes de optimizar su costo.
+*   **aLNS (Ant colony heuristic with Large Neighbourhood Search):** Un algoritmo que combina la optimización de colonias de hormigas con búsqueda local iterada, logrando superar consistentemente a enfoques previos.
+*   **Fuzzy GRASP:** Enfoques que incorporan lógica difusa para modelar la incertidumbre del riesgo de manera más realista, permitiendo diferenciar entre rutas según su grado de seguridad.
